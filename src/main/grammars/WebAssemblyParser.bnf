@@ -1,0 +1,21 @@
+{
+  parserClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParser"
+
+//  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="WebAssembly"
+  psiImplClassSuffix="Impl"
+  psiPackage="org.jetbrains.webstorm.lang.psi"
+  psiImplPackage="org.jetbrains.webstorm.lang.impl"
+//  psiImplUtilClass="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyPsiImplUtil"
+
+  elementTypeHolderClass="org.jetbrains.webstorm.lang.psi.WebAssemblyElementTypes"
+  elementTypeClass="org.jetbrains.webstorm.lang.psi.WebAssemblyCompositeType"
+  tokenTypeClass="org.jetbrains.webstorm.lang.psi.WebAssemblyTokenType"
+}
+
+webAssemblyFile ::= item_*
+
+private item_ ::= (property|COMMENT|CRLF)
+
+property ::= (KEY? SEPARATOR VALUE?) | KEY

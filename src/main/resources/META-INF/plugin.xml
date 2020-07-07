@@ -18,6 +18,9 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileType name="WebAssembly" implementationClass="org.jetbrains.webstorm.lang.psi.WebAssemblyFileType"
                   fieldName="INSTANCE" language="WebAssembly" extensions="wasm"/>
+
+        <lang.parserDefinition language="WebAssembly"
+                               implementationClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParserDefinition"/>
     </extensions>
 
     <actions>

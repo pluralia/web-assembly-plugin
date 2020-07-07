@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    testCompile("junit", "junit", "4.12")
+    testImplementation("junit", "junit", "4.12")
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -32,4 +32,22 @@ tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml
     changeNotes("""
       Add change notes here.<br>
       <em>most HTML tags may be used</em>""")
+}
+//
+//sourceSets {
+//    main {
+//        java.srcDirs("src/gen")
+//        kotlin.srcDirs("src/$platformVersion/main/kotlin")
+//        resources.srcDirs("src/$platformVersion/main/resources")
+//    }
+//    test {
+//        kotlin.srcDirs("src/$platformVersion/test/kotlin")
+//        resources.srcDirs("src/$platformVersion/test/resources")
+//    }
+//}
+
+sourceSets {
+    main {
+        java.srcDirs("src/main/gen")
+    }
 }
