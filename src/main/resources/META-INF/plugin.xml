@@ -21,6 +21,11 @@
 
         <lang.parserDefinition language="WebAssembly"
                                implementationClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParserDefinition"/>
+
+        <lang.syntaxHighlighterFactory language="WebAssembly"
+                                       implementationClass="org.jetbrains.webstorm.lang.WebAssemblySyntaxHighlighterFactory"/>
+
+        <colorSettingsPage implementation="org.jetbrains.webstorm.ide.colors.WebAssemblyColorSettingPage"/>
     </extensions>
 
     <actions>
