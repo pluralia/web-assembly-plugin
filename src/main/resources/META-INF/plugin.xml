@@ -16,14 +16,14 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="WebAssembly" implementationClass="org.jetbrains.webstorm.lang.psi.WebAssemblyFileType"
-                  fieldName="INSTANCE" language="WebAssembly" extensions="wasm"/>
+        <fileType name="WebAssembly file" implementationClass="org.jetbrains.webstorm.lang.psi.WebAssemblyFileType"
+                  fieldName="INSTANCE" language="WebAssembly" extensions="wat"/>
 
         <lang.parserDefinition language="WebAssembly"
                                implementationClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParserDefinition"/>
 
         <lang.syntaxHighlighterFactory language="WebAssembly"
-                                       implementationClass="org.jetbrains.webstorm.lang.WebAssemblySyntaxHighlighterFactory"/>
+                                       implementationClass="org.jetbrains.webstorm.ide.WebAssemblySyntaxHighlighterFactory"/>
 
         <colorSettingsPage implementation="org.jetbrains.webstorm.ide.colors.WebAssemblyColorSettingPage"/>
     </extensions>

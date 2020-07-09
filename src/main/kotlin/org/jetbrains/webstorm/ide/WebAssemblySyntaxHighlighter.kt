@@ -8,9 +8,9 @@ import com.intellij.psi.tree.IElementType
 import gnu.trove.THashMap
 import org.jetbrains.webstorm.ide.colors.WebAssemblyColor
 import org.jetbrains.webstorm.lang.lexer.WebAssemblyLexerAdapter
-import org.jetbrains.webstorm.lang.psi.WebAssemblyElementTypes.*
+import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes.*
 
-class WebAssemblyHighlighter : SyntaxHighlighterBase() {
+class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getHighlightingLexer(): Lexer = WebAssemblyLexerAdapter()
 
     override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> =

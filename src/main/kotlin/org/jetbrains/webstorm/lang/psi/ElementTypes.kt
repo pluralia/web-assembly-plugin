@@ -10,12 +10,12 @@ class WebAssemblyTokenType(debugName: String) : IElementType(debugName, WebAssem
     override fun toString(): String = "WebAssemblerTokenType." + super.toString()
 }
 
-class WebAssemblyCompositeType(debugName: String) : IElementType(debugName, WebAssemblyLanguage)
+class WebAssemblyElementType(debugName: String) : IElementType(debugName, WebAssemblyLanguage)
 
 object WebAssemblyFileType : LanguageFileType(WebAssemblyLanguage) {
-    override fun getName(): String = "WebAssembly"
-    override fun getDescription(): String = "WebAssembly file"
-    override fun getDefaultExtension(): String = "wasm"
+    override fun getName(): String = "WebAssembly file"
+    override fun getDescription(): String = "WebAssembly language file"
+    override fun getDefaultExtension(): String = "wat"
 
     override fun getIcon(): Icon = WebAssemblyIcons.WEB_ASSEMBLY_FILE
 }

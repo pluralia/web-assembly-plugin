@@ -14,7 +14,7 @@ enum class WebAssemblyColor(humanName: String, default: TextAttributesKey? = nul
     BAD_CHARACTER("Bad character", HighlighterColors.BAD_CHARACTER)
     ;
 
-    val textAttributesKey: TextAttributesKey = TextAttributesKey.createTextAttributesKey("webassembly.$name", default)
+    val textAttributesKey: TextAttributesKey = TextAttributesKey.createTextAttributesKey("WebAssembly.$name", default)
     val attributesDescriptor: AttributesDescriptor = AttributesDescriptor(humanName, textAttributesKey)
     val testSeverity: HighlightSeverity = HighlightSeverity(name, HighlightSeverity.INFORMATION.myVal)
 }

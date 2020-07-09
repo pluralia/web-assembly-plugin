@@ -1,17 +1,18 @@
 {
   parserClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParser"
 
-//  extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+//  extends="org.jetbrains.webstorm.extapi.psi.ASTWrapperPsiElement"
 
   psiClassPrefix="WebAssembly"
   psiImplClassSuffix="Impl"
   psiPackage="org.jetbrains.webstorm.lang.psi"
-  psiImplPackage="org.jetbrains.webstorm.lang.impl"
-//  psiImplUtilClass="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyPsiImplUtil"
+  psiImplPackage="org.jetbrains.webstorm.lang.psi.impl"
 
-  elementTypeHolderClass="org.jetbrains.webstorm.lang.psi.WebAssemblyElementTypes"
-  elementTypeClass="org.jetbrains.webstorm.lang.psi.WebAssemblyCompositeType"
-  tokenTypeClass="org.jetbrains.webstorm.lang.psi.WebAssemblyTokenType"
+  elementTypeHolderClass="org.jetbrains.webstorm.lang.psi.WebAssemblyTypes"
+  elementTypeClass="org.jetbrains.webstorm.lang.psi.WebAssemblyElementType"         // lang.psi.ElementTypes
+  tokenTypeClass="org.jetbrains.webstorm.lang.psi.WebAssemblyTokenType"             // lang.psi.ElementTypes
+
+  psiImplUtilClass="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyPsiImplUtil"
 }
 
 webAssemblyFile ::= item_*
