@@ -17,19 +17,18 @@ class WebAssemblyColorSettingPage : ColorSettingsPage {
     override fun getHighlighter(): SyntaxHighlighter = WebAssemblySyntaxHighlighter()
 
     override fun getDemoText(): String =
-        """# You are reading the ".properties" entry.
-        ! The exclamation mark can also mark text as comments.
-        website = https://en.wikipedia.org/
-        language = English
-        # The backslash below tells the application to continue reading
-        # the value onto the next line.
-        message = Welcome to \
-                  Wikipedia!
-        # Add spaces to the key
-        key\ with\ spaces = This is the value that could be looked up with the key "key with spaces".
-        # Unicode
-        tab : \u0009"""
-
+            """
+(module
+  ;; one line comment
+  (func ${'$'}getAnswer (result i32)
+    i32.const 42)
+  (func (export "getAnswerPlus1") (result i32)
+    call ${'$'}getAnswer
+    ;( block
+       comment );
+    i32.const 1
+    i32.add))
+            """.trimIndent()
     override fun getAdditionalHighlightingTagToDescriptorMap(): Map<String, TextAttributesKey> = tagToDescriptorMap
     override fun getAttributeDescriptors(): Array<AttributesDescriptor> = attributesDescriptors
     override fun getColorDescriptors(): Array<ColorDescriptor> = ColorDescriptor.EMPTY_ARRAY

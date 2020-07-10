@@ -17,11 +17,10 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
         pack(tokenMap[tokenType]?.textAttributesKey)
 
     private val tokenMap: Map<IElementType, WebAssemblyColor> =
-        THashMap <IElementType, WebAssemblyColor>().apply {
-            put(SEPARATOR, WebAssemblyColor.SEPARATOR)
-            put(KEY, WebAssemblyColor.KEYWORD)
-            put(VALUE, WebAssemblyColor.VALUE)
-            put(COMMENT, WebAssemblyColor.COMMENT)
-            put(TokenType.BAD_CHARACTER, WebAssemblyColor.BAD_CHARACTER)
-        }
+        hashMapOf(
+            SEPARATOR to WebAssemblyColor.SEPARATOR,
+            KEY to WebAssemblyColor.KEYWORD,
+            VALUE to WebAssemblyColor.VALUE,
+            COMMENT to WebAssemblyColor.COMMENT,
+            TokenType.BAD_CHARACTER to WebAssemblyColor.BAD_CHARACTER)
 }

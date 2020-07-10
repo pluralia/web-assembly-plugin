@@ -1,8 +1,6 @@
 {
   parserClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParser"
 
-//  extends="org.jetbrains.webstorm.extapi.psi.ASTWrapperPsiElement"
-
   psiClassPrefix="WebAssembly"
   psiImplClassSuffix="Impl"
   psiPackage="org.jetbrains.webstorm.lang.psi"

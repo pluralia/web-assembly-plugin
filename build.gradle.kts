@@ -33,18 +33,6 @@ tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml
       Add change notes here.<br>
       <em>most HTML tags may be used</em>""")
 }
-//
-//sourceSets {
-//    main {
-//        java.srcDirs("src/gen")
-//        kotlin.srcDirs("src/$platformVersion/main/kotlin")
-//        resources.srcDirs("src/$platformVersion/main/resources")
-//    }
-//    test {
-//        kotlin.srcDirs("src/$platformVersion/test/kotlin")
-//        resources.srcDirs("src/$platformVersion/test/resources")
-//    }
-//}
 
 sourceSets {
     main {
