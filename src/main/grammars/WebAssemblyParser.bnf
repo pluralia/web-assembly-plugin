@@ -15,6 +15,72 @@
 
 webAssemblyFile ::= item_*
 
-private item_ ::= (property|COMMENT|CRLF)
+private item_ ::= comment | module | modulefield+
 
-property ::= (KEY? SEPARATOR VALUE?) | KEY
+comment ::= LINE_COMMENT | blockcomment
+blockcomment ::= COMMENT_LEFT_BR (COMMENT_CHAR | blockcomment)* COMMENT_RIGHT_BR
+
+module ::= LEFT_BRACKET MODULEKEY IDENTIFIER? modulefield* RIGHT_BRACKET
+modulefield ::= type | import | func | table | mem | global | export | start | elem | data
+
+functype ::= LEFT_BRACKET FUNCKEY param* result* RIGHT_BRACKET
+param ::= LEFT_BRACKET PARAMKEY (VALTYPE+ | IDENTIFIER? VALTYPE) RIGHT_BRACKET
+result ::= LEFT_BRACKET RESULTKEY VALTYPE+ RIGHT_BRACKET
+
+memtype ::= UNSIGNED UNSIGNED?      // limits
+tabletype ::= memtype FUNCREFKEY
+
+globaltype ::= VALTYPE | LEFT_BRACKET MUTKEY VALTYPE RIGHT_BRACKET
+
+instr ::= plaininstr | blockinstr
+
+blocktype ::= typeuse | result?
+blockinstr ::= (BLOCKKEY | LOOPKEY)  IDENTIFIER? blocktype instr* ENDKEY IDENTIFIER?
+             | IFKEY IDENTIFIER? blocktype instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
+plaininstr ::= ONEWORDINSTR
+             | (BRKEY | BRIFKEY | CALLKEY) idx
+             | BRTABLEKEY idx+
+             | CALLINDIRECTKEY typeuse
+             | VARIABLEINSTR idx
+             | MEMORYINSTR (OFFSETEQKEY UNSIGNED)? (ALIGNEQKEY UNSIGNED)?
+             | ICONST (UNSIGNED | SIGNED)
+             | FCONST FLOAT
+
+idx ::= UNSIGNED | IDENTIFIER
+
+type ::= LEFT_BRACKET TYPEKEY IDENTIFIER? functype RIGHT_BRACKET
+
+typeuse ::= (LEFT_BRACKET TYPEKEY idx RIGHT_BRACKET)? param* result*
+
+import ::= LEFT_BRACKET IMPORTKEY STRING STRING importdesc RIGHT_BRACKET
+importdesc ::= LEFT_BRACKET FUNCKEY IDENTIFIER? typeuse RIGHT_BRACKET
+             | LEFT_BRACKET TABLEKEY IDENTIFIER? tabletype RIGHT_BRACKET
+             | LEFT_BRACKET MEMORYKEY IDENTIFIER? memtype RIGHT_BRACKET
+             | LEFT_BRACKET GLOBALKEY IDENTIFIER? globaltype RIGHT_BRACKET
+
+impabbrev ::= LEFT_BRACKET IMPORTKEY STRING STRING RIGHT_BRACKET
+expabbrev ::= LEFT_BRACKET EXPORTKEY STRING RIGHT_BRACKET
+
+func ::= LEFT_BRACKET FUNCKEY IDENTIFIER? (expabbrev | impabbrev)? typeuse local* instr* RIGHT_BRACKET
+local ::= LEFT_BRACKET LOCALKEY (IDENTIFIER? VALTYPE | VALTYPE+) RIGHT_BRACKET
+
+table ::= LEFT_BRACKET TABLEKEY IDENTIFIER? tableaux RIGHT_BRACKET
+tableaux ::= (impabbrev | expabbrev)? tabletype
+           | FUNCREFKEY LEFT_BRACKET ELEMKEY idx* RIGHT_BRACKET
+
+mem ::= LEFT_BRACKET MEMORYKEY IDENTIFIER? memaux RIGHT_BRACKET
+memaux ::= (impabbrev | expabbrev)? memtype
+         | LEFT_BRACKET DATAKEY datastring RIGHT_BRACKET
+
+global ::= LEFT_BRACKET GLOBALKEY IDENTIFIER? (expabbrev | impabbrev)? globaltype instr* RIGHT_BRACKET
+
+export ::= LEFT_BRACKET EXPORTKEY STRING exportdesc RIGHT_BRACKET
+exportdesc ::= LEFT_BRACKET (FUNCKEY | TABLEKEY | MEMORYKEY | GLOBALKEY) idx RIGHT_BRACKET
+
+start ::= LEFT_BRACKET STARTKEY idx RIGHT_BRACKET
+
+instrabbrev ::= instr | LEFT_BRACKET OFFSETKEY instr RIGHT_BRACKET
+
+elem ::= LEFT_BRACKET ELEMKEY idx? LEFT_BRACKET OFFSETKEY instrabbrev* RIGHT_BRACKET idx* RIGHT_BRACKET
+
+data ::= LEFT_BRACKET DATAKEY idx? LEFT_BRACKET OFFSETKEY instrabbrev* RIGHT_BRACKET datastring* RIGHT_BRACKET
