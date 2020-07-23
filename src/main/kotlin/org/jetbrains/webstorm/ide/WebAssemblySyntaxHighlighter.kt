@@ -62,8 +62,8 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
             FLOAT to WebAssemblyColor.CONSTANT,
             STRING to WebAssemblyColor.CONSTANT,
             IDENTIFIER to WebAssemblyColor.IDENTIFIER,
-            LEFT_BRACKET to WebAssemblyColor.BRACKET,
-            RIGHT_BRACKET to WebAssemblyColor.BRACKET,
+            LPAR to WebAssemblyColor.PARENTHESES,
+            RPAR to WebAssemblyColor.PARENTHESES,
 
             LINE_COMMENT to WebAssemblyColor.COMMENT,
             COMMENT_RIGHT_BR to WebAssemblyColor.COMMENT,

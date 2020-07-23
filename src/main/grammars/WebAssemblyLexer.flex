@@ -116,8 +116,8 @@ MEMORYINSTR = {VALTYPE} \. ("load" | "store")
     "module"                                        { return WebAssemblyTypes.MODULEKEY; }
     "global"                                        { return WebAssemblyTypes.GLOBALKEY; }
 
-    "("                                             { return WebAssemblyTypes.LEFT_BRACKET; }
-    ")"                                             { return WebAssemblyTypes.RIGHT_BRACKET; }
+    "("                                             { return WebAssemblyTypes.LPAR; }
+    ")"                                             { return WebAssemblyTypes.RPAR; }
 
     {UN}                                            { return WebAssemblyTypes.UNSIGNED; }
     {SN}                                            { return WebAssemblyTypes.SIGNED; }

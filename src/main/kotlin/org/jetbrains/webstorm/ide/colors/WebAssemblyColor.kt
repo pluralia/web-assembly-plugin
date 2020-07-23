@@ -12,7 +12,7 @@ enum class WebAssemblyColor(humanName: String, default: TextAttributesKey? = nul
     CONSTANT("Constant", Default.CONSTANT),
     IDENTIFIER("Identifier", Default.IDENTIFIER),
     KEYWORD("Keyword", Default.KEYWORD),
-    BRACKET("Bracket", Default.BRACKETS),
+    PARENTHESES("Bracket", Default.PARENTHESES),
 
     BAD_CHARACTER("Bad character", HighlighterColors.BAD_CHARACTER)
     ;
