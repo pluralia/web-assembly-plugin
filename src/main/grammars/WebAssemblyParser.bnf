@@ -18,7 +18,7 @@ webAssemblyFile ::= item_*
 private item_ ::= comment | module | modulefield+
 
 comment ::= LINE_COMMENT | blockcomment
-blockcomment ::= COMMENT_LEFT_BR (COMMENT_CHAR | blockcomment)* COMMENT_RIGHT_BR
+blockcomment ::= BLOCK_COMMENT_START (BLOCK_COMMENT_CHAR | blockcomment)* BLOCK_COMMENT_FINISH
 
 module ::= LPAR MODULEKEY IDENTIFIER? modulefield* RPAR
 modulefield ::= type | import | func | table | mem | global | export | start | elem | data
@@ -37,14 +37,17 @@ instr ::= plaininstr | blockinstr
 blocktype ::= typeuse | result?
 blockinstr ::= (BLOCKKEY | LOOPKEY)  IDENTIFIER? blocktype instr* ENDKEY IDENTIFIER?
              | IFKEY IDENTIFIER? blocktype instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
-plaininstr ::= ONEWORDINSTR
-             | (BRKEY | BRIFKEY | CALLKEY) idx
-             | BRTABLEKEY idx+
-             | CALLINDIRECTKEY typeuse
-             | VARIABLEINSTR idx
-             | MEMORYINSTR (OFFSETEQKEY UNSIGNED)? (ALIGNEQKEY UNSIGNED)?
+plaininstr ::= CONTROLINSTR
+             | CONTROLINSTR_IDX idx
+             | BRTABLEINSTR idx+
+             | CALLINDIRECTINSTR typeuse
+             | PARAMETRICINSTR
+             | VARIABLEINSTR_IDX idx
+             | MEMORYINSTR
+             | MEMORYINSTR_MEMARG (OFFSETEQKEY UNSIGNED)? (ALIGNEQKEY UNSIGNED)?
              | ICONST (UNSIGNED | SIGNED)
              | FCONST FLOAT
+             | NUMERICINSTR
 
 idx ::= UNSIGNED | IDENTIFIER
 

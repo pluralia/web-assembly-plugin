@@ -23,7 +23,7 @@ import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes;
 %state BLOCKCHAR
 
 SPACE = [\s\t\n\r]
-LINECOMMENT = ;; .*
+LINECOMMENT = ;;.*
 
 // integers
 SIGN = [+-]
@@ -32,7 +32,7 @@ HEXDIGIT = {DIGIT} | [a-fA-F]
 NUM = {DIGIT} (_? {DIGIT})*
 HEXNUM = {HEXDIGIT} (_? {HEXDIGIT})*
 
-UN = {NUM} | 0x{HEXNUM}
+UN = {NUM} | 0x {HEXNUM}
 SN = {SIGN} ({NUM} | 0x {HEXNUM})
 
 // floating-point
@@ -54,32 +54,57 @@ ID = \$ ({DIGIT} | [A-Za-z!#$%&′*+\-./:<=>?@\\\^_`|~])+
 VALTYPE = [if] (32 | 64)
 
 // instructions
-ONEWORDINSTR = "unreachable" | "nop" | "return"    // control
-             | "drop" | "select"                   // parametric
-             | "memory.size" | "memory.grow"       // memory
-             // numeric
-             | i (32 | 64) \. (c[lt]z | popcnt | add | sub | mul | (div | rem | shr) _ [su] | and | x?or | shl
-                                      | rot[lr] | eqz? | ne | [lg][te] _[su])
-             | f (32 | 64) \. (abs | neg | ceil | floor | trunc | nearest | sqrt | add | sub | mul | div | min | max
-                                   | copysign | eq | ne | [lg][te])
-             | i32 \. wrap_i64
-             | i (32 | 64) \. trunc_ ((f | sat) (32 | 64) _ [su])
-             | i64 \. extend_i32[su]
-             | f (32 | 64) \. convert_ (i (32 | 64) _ [su])
-             | f32 \. demote_f64 | f64 \. promote_f32
-             | i32 \. reinterpret_f32 | i64 \. reinterpret_f64 | f32 \. reinterpret_i32 | f64 \. reinterpret_i64
-             | i32 \. extend (8 | 16) _s | i64 \. extend (8 | 16 | 32) _s
-VARIABLEINSTR = ("local" | "global") \. ("get" | "set") | "local.tee"
-MEMORYINSTR = {VALTYPE} \. ("load" | "store")
-            | "i32.load"  (8 | 16)_[su] | "i64.load"  (8 | 16 | 32)_[su]
-            | "i32.store" (8 | 16) | "i64.store" (8 | 16 | 32)
+// control
+CONTROLINSTR = unreachable | nop | return
+CONTROLINSTR_IDX = br(_if)? | call
+BRTABLEINSTR = br_table
+CALLINDIRECTINSTR = call_indirect
+
+// parametric
+PARAMETRICINSTR = drop | select
+
+// variable
+VARIABLEINSTR_IDX = local\.([gs]et | tee)
+                  | global\.[gs]et
+
+// memory
+MEMORYINSTR = memory\.(size | grow)
+MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
+                   | i32\.(load((8 | 16)_[su]) | store(8 | 16))
+                   | i64\.(load((8 | 16 | 32)_[su]) | store(8 | 16 | 32))
+
+// numetic
+ICONST = i(32 | 64)\.const
+FCONST = i(32 | 64)\.const
+NUMERICINSTR = {VALTYPE}\.const
+             | i(32 | 64)\.(c[lt]z | popcnt | add | sub | mul | (div | rem | shr)_[su] | and | x?or | shl | rot[lr]
+                                   | eqz? | ne | [lg][te]_[su] | trunc_((f | sat)(32 | 64)_[su]))
+             | i32\.(wrap_i64 | extend(8 | 16)_s)
+             | i64\.(extend_i32[su] | extend(8 | 16 | 32)_s)
+             | f (32 | 64)\.(abs | neg | ceil | floor | trunc | nearest | sqrt | add | sub | mul | div | min | max
+                                 | copysign | eq | ne | [lg][te]] | convert_i(32 | 64)_[su])
+             | f32\.demote_f64 | f64\.promote_f32
+             | i32\.reinterpret_f32 | i64\.reinterpret_f64 | f32\.reinterpret_i32 | f64\.reinterpret_i64
 
 %%
 <YYINITIAL> {
     {VALTYPE}                                       { return WebAssemblyTypes.VALTYPE; }
-    {ONEWORDINSTR}                                  { return WebAssemblyTypes.ONEWORDINSTR; }
-    {VARIABLEINSTR}                                 { return WebAssemblyTypes.VARIABLEINSTR; }
-    {MEMORYINSTR}                                   { return WebAssemblyTypes.MEMORYINSTR; }
+
+    {CONTROLINSTR}                                  { return WebAssemblyTypes.CONTROLINSTR; }
+    {CONTROLINSTR_IDX}                              { return WebAssemblyTypes.CONTROLINSTR_IDX; }
+    {BRTABLEINSTR}                                  { return WebAssemblyTypes.BRTABLEINSTR; }
+    {CALLINDIRECTINSTR}                             { return WebAssemblyTypes.CALLINDIRECTINSTR; }
+
+    {PARAMETRICINSTR}                               { return WebAssemblyTypes.PARAMETRICINSTR; }
+
+    {VARIABLEINSTR_IDX}                             { return WebAssemblyTypes.VARIABLEINSTR_IDX; }
+
+    {MEMORYINSTR}                                  { return WebAssemblyTypes.MEMORYINSTR; }
+    {MEMORYINSTR_MEMARG}                           { return WebAssemblyTypes.MEMORYINSTR_MEMARG; }
+
+    {ICONST}                                        { return WebAssemblyTypes.ICONST; }
+    {FCONST}                                        { return WebAssemblyTypes.FCONST; }
+    {NUMERICINSTR}                                  { return WebAssemblyTypes.NUMERICINSTR; }
 
     "func"                                          { return WebAssemblyTypes.FUNCKEY; }
     "param"                                         { return WebAssemblyTypes.PARAMKEY; }
@@ -92,15 +117,8 @@ MEMORYINSTR = {VALTYPE} \. ("load" | "store")
     "end"                                           { return WebAssemblyTypes.ENDKEY; }
     "if"                                            { return WebAssemblyTypes.IFKEY; }
     "else"                                          { return WebAssemblyTypes.ELSEKEY; }
-    "br"                                            { return WebAssemblyTypes.BRKEY; }
-    "br_if"                                         { return WebAssemblyTypes.BRIFKEY; }
-    "call"                                          { return WebAssemblyTypes.CALLKEY; }
-    "br_table"                                      { return WebAssemblyTypes.BRTABLEKEY; }
-    "call_indirect"                                 { return WebAssemblyTypes.CALLINDIRECTKEY; }
     "offset="                                       { return WebAssemblyTypes.OFFSETEQKEY; }
     "align="                                        { return WebAssemblyTypes.ALIGNEQKEY; }
-    i (32 | 64) \.const                             { return WebAssemblyTypes.ICONST; }
-    f (32 | 64) \.const                             { return WebAssemblyTypes.FCONST; }
 
     "type"                                          { return WebAssemblyTypes.TYPEKEY; }
     "import"                                        { return WebAssemblyTypes.IMPORTKEY; }
@@ -116,27 +134,27 @@ MEMORYINSTR = {VALTYPE} \. ("load" | "store")
     "module"                                        { return WebAssemblyTypes.MODULEKEY; }
     "global"                                        { return WebAssemblyTypes.GLOBALKEY; }
 
-    "("                                             { return WebAssemblyTypes.LPAR; }
-    ")"                                             { return WebAssemblyTypes.RPAR; }
-
+    {ID}                                            { return WebAssemblyTypes.IDENTIFIER; }
+    {STRING}                                        { return WebAssemblyTypes.STRING; }
     {UN}                                            { return WebAssemblyTypes.UNSIGNED; }
     {SN}                                            { return WebAssemblyTypes.SIGNED; }
     {FN}                                            { return WebAssemblyTypes.FLOAT; }
-    {STRING}                                        { return WebAssemblyTypes.STRING; }
 
-    {ID}                                            { return WebAssemblyTypes.IDENTIFIER; }
+    "("                                             { return WebAssemblyTypes.LPAR; }
+    ")"                                             { return WebAssemblyTypes.RPAR; }
 
     {SPACE}+                                        { return TokenType.WHITE_SPACE; }
+
     {LINECOMMENT}                                   { return WebAssemblyTypes.LINE_COMMENT; }
-    "(;"                                            { yybegin(BLOCKCHAR); return WebAssemblyTypes.COMMENT_LEFT_BR; }
-    ";)"                                            { yybegin(YYINITIAL); return WebAssemblyTypes.COMMENT_RIGHT_BR; }
+    "(;"                                            { yybegin(BLOCKCHAR); return WebAssemblyTypes.BLOCK_COMMENT_START; }
+    ";)"                                            { yybegin(YYINITIAL); return WebAssemblyTypes.BLOCK_COMMENT_FINISH; }
 
     [^]                                             { return TokenType.BAD_CHARACTER; }
 }
 
 <BLOCKCHAR> {
-    [^;(]                                           { yybegin(BLOCKCHAR); return WebAssemblyTypes.COMMENT_CHAR; }
-    ";"[^)]                                         { yybegin(BLOCKCHAR); yypushback(1); return WebAssemblyTypes.COMMENT_CHAR; }
-    "("[^;]                                         { yybegin(BLOCKCHAR); yypushback(1); return WebAssemblyTypes.COMMENT_CHAR; }
+    [^;(]                                           { yybegin(BLOCKCHAR); return WebAssemblyTypes.BLOCK_COMMENT_CHAR; }
+    ";"[^)]                                         { yybegin(BLOCKCHAR); yypushback(1); return WebAssemblyTypes.BLOCK_COMMENT_CHAR; }
+    "("[^;]                                         { yybegin(BLOCKCHAR); yypushback(1); return WebAssemblyTypes.BLOCK_COMMENT_CHAR; }
     [^]                                             { yybegin(YYINITIAL); yypushback(yylength()); }
 }

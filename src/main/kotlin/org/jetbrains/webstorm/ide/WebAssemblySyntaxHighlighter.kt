@@ -17,57 +17,65 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
 
     private val tokenMap: Map<IElementType, WebAssemblyColor> =
         hashMapOf(
+            MODULEKEY to WebAssemblyColor.KEYWORD,
+
+            // modulefield
+            TYPEKEY to WebAssemblyColor.KEYWORD,
+            IMPORTKEY to WebAssemblyColor.KEYWORD,
             FUNCKEY to WebAssemblyColor.KEYWORD,
+            TABLEKEY to WebAssemblyColor.KEYWORD,
+            MEMORYKEY to WebAssemblyColor.KEYWORD,
+            GLOBALKEY to WebAssemblyColor.KEYWORD,
+            EXPORTKEY to WebAssemblyColor.KEYWORD,
+            STARTKEY to WebAssemblyColor.KEYWORD,
+            ELEMKEY to WebAssemblyColor.KEYWORD,
+            DATAKEY to WebAssemblyColor.KEYWORD,
+
             PARAMKEY to WebAssemblyColor.KEYWORD,
             RESULTKEY to WebAssemblyColor.KEYWORD,
             FUNCREFKEY to WebAssemblyColor.KEYWORD,
             MUTKEY to WebAssemblyColor.KEYWORD,
-
+            LOCALKEY to WebAssemblyColor.KEYWORD,
             BLOCKKEY to WebAssemblyColor.KEYWORD,
             LOOPKEY to WebAssemblyColor.KEYWORD,
             ENDKEY to WebAssemblyColor.KEYWORD,
             IFKEY to WebAssemblyColor.KEYWORD,
             ELSEKEY to WebAssemblyColor.KEYWORD,
-            BRKEY to WebAssemblyColor.KEYWORD,
-            BRIFKEY to WebAssemblyColor.KEYWORD,
-            CALLKEY to WebAssemblyColor.KEYWORD,
-            BRTABLEKEY to WebAssemblyColor.KEYWORD,
-            CALLINDIRECTKEY to WebAssemblyColor.KEYWORD,
-            OFFSETEQKEY to WebAssemblyColor.KEYWORD,
-            ALIGNEQKEY to WebAssemblyColor.KEYWORD,
-            ICONST to WebAssemblyColor.KEYWORD,
-            FCONST to WebAssemblyColor.KEYWORD,
-
-            TYPEKEY to WebAssemblyColor.KEYWORD,
-            IMPORTKEY to WebAssemblyColor.KEYWORD,
-            TABLEKEY to WebAssemblyColor.KEYWORD,
-            MEMORYKEY to WebAssemblyColor.KEYWORD,
-            GLOBALKEY to WebAssemblyColor.KEYWORD,
-            LOCALKEY to WebAssemblyColor.KEYWORD,
-            EXPORTKEY to WebAssemblyColor.KEYWORD,
-            ELEMKEY to WebAssemblyColor.KEYWORD,
-            DATAKEY to WebAssemblyColor.KEYWORD,
             OFFSETKEY to WebAssemblyColor.KEYWORD,
-            STARTKEY to WebAssemblyColor.KEYWORD,
-            MODULEKEY to WebAssemblyColor.KEYWORD,
-            GLOBALKEY to WebAssemblyColor.KEYWORD,
 
-            VALTYPE to WebAssemblyColor.KEYWORD,
-            ONEWORDINSTR to WebAssemblyColor.KEYWORD,
-            VARIABLEINSTR to WebAssemblyColor.KEYWORD,
+            OFFSETEQKEY to WebAssemblyColor.RESERVED,
+            ALIGNEQKEY to WebAssemblyColor.RESERVED,
+
+            // instructions
+            CONTROLINSTR to WebAssemblyColor.KEYWORD,
+            CONTROLINSTR_IDX to WebAssemblyColor.KEYWORD,
+            BRTABLEINSTR to WebAssemblyColor.KEYWORD,
+            CALLINDIRECTINSTR to WebAssemblyColor.KEYWORD,
+            VARIABLEINSTR_IDX to WebAssemblyColor.KEYWORD,
             MEMORYINSTR to WebAssemblyColor.KEYWORD,
+            PARAMETRICINSTR to WebAssemblyColor.KEYWORD,
+            MEMORYINSTR_MEMARG to WebAssemblyColor.KEYWORD,
 
-            UNSIGNED to WebAssemblyColor.CONSTANT,
-            SIGNED to WebAssemblyColor.CONSTANT,
-            FLOAT to WebAssemblyColor.CONSTANT,
-            STRING to WebAssemblyColor.CONSTANT,
+            ICONST to WebAssemblyColor.RESERVED,
+            FCONST to WebAssemblyColor.RESERVED,
+            NUMERICINSTR to WebAssemblyColor.RESERVED,
+            VALTYPE to WebAssemblyColor.RESERVED,
+
             IDENTIFIER to WebAssemblyColor.IDENTIFIER,
+
+            STRING to WebAssemblyColor.STRING,
+
+            UNSIGNED to WebAssemblyColor.NUMBER,
+            SIGNED to WebAssemblyColor.NUMBER,
+            FLOAT to WebAssemblyColor.NUMBER,
+
             LPAR to WebAssemblyColor.PARENTHESES,
             RPAR to WebAssemblyColor.PARENTHESES,
 
             LINE_COMMENT to WebAssemblyColor.COMMENT,
-            COMMENT_RIGHT_BR to WebAssemblyColor.COMMENT,
-            COMMENT_LEFT_BR to WebAssemblyColor.COMMENT,
-            COMMENT_CHAR to WebAssemblyColor.COMMENT,
+            BLOCK_COMMENT_START to WebAssemblyColor.COMMENT,
+            BLOCK_COMMENT_FINISH to WebAssemblyColor.COMMENT,
+            BLOCK_COMMENT_CHAR to WebAssemblyColor.COMMENT,
+
             TokenType.BAD_CHARACTER to WebAssemblyColor.BAD_CHARACTER)
 }

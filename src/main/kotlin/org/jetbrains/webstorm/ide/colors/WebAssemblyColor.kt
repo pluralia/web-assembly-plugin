@@ -7,13 +7,13 @@ import com.intellij.openapi.options.colors.AttributesDescriptor
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors as Default
 
 enum class WebAssemblyColor(humanName: String, default: TextAttributesKey? = null) {
-    COMMENT("Comment", Default.LINE_COMMENT),
-
-    CONSTANT("Constant", Default.CONSTANT),
-    IDENTIFIER("Identifier", Default.IDENTIFIER),
     KEYWORD("Keyword", Default.KEYWORD),
+    RESERVED("Reserved", Default.CONSTANT),
+    STRING("String", Default.STRING),
+    NUMBER("Number", Default.NUMBER),
+    IDENTIFIER("Identifier", Default.IDENTIFIER),
     PARENTHESES("Bracket", Default.PARENTHESES),
-
+    COMMENT("Comment", Default.LINE_COMMENT),
     BAD_CHARACTER("Bad character", HighlighterColors.BAD_CHARACTER)
     ;
 
