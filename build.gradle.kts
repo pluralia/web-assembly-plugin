@@ -1,7 +1,6 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.grammarkit.tasks.GenerateParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.jetbrains.intellij.tasks.RunIdeTask
 
 plugins {
     id("org.jetbrains.intellij") version "0.4.21"
@@ -10,7 +9,7 @@ plugins {
     id("org.jetbrains.grammarkit") version "2020.2.1"
 }
 
-group = "com.jetbrains.webstorm"
+group = "org.jetbrains.webstorm"
 version = "1.0-SNAPSHOT"
 
 repositories {

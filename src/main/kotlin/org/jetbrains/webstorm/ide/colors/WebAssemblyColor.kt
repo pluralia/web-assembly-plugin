@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.DefaultLanguageHighlighterColors as Default
 
 enum class WebAssemblyColor(humanName: String, default: TextAttributesKey? = null) {
     KEYWORD("Keyword", Default.KEYWORD),
-    RESERVED("Reserved", Default.CONSTANT),
+    RESERVED("Instruction", Default.CONSTANT),
     STRING("String", Default.STRING),
     NUMBER("Number", Default.NUMBER),
     IDENTIFIER("Identifier", Default.IDENTIFIER),

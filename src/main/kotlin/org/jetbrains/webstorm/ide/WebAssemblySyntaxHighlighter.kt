@@ -42,24 +42,22 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
             IFKEY to WebAssemblyColor.KEYWORD,
             ELSEKEY to WebAssemblyColor.KEYWORD,
             OFFSETKEY to WebAssemblyColor.KEYWORD,
-
-            OFFSETEQKEY to WebAssemblyColor.RESERVED,
-            ALIGNEQKEY to WebAssemblyColor.RESERVED,
+            OFFSETEQKEY to WebAssemblyColor.KEYWORD,
+            ALIGNEQKEY to WebAssemblyColor.KEYWORD,
+            VALTYPE to WebAssemblyColor.KEYWORD,
 
             // instructions
-            CONTROLINSTR to WebAssemblyColor.KEYWORD,
-            CONTROLINSTR_IDX to WebAssemblyColor.KEYWORD,
-            BRTABLEINSTR to WebAssemblyColor.KEYWORD,
-            CALLINDIRECTINSTR to WebAssemblyColor.KEYWORD,
-            VARIABLEINSTR_IDX to WebAssemblyColor.KEYWORD,
-            MEMORYINSTR to WebAssemblyColor.KEYWORD,
-            PARAMETRICINSTR to WebAssemblyColor.KEYWORD,
-            MEMORYINSTR_MEMARG to WebAssemblyColor.KEYWORD,
-
+            CONTROLINSTR to WebAssemblyColor.RESERVED,
+            CONTROLINSTR_IDX to WebAssemblyColor.RESERVED,
+            BRTABLEINSTR to WebAssemblyColor.RESERVED,
+            CALLINDIRECTINSTR to WebAssemblyColor.RESERVED,
+            PARAMETRICINSTR to WebAssemblyColor.RESERVED,
+            VARIABLEINSTR_IDX to WebAssemblyColor.RESERVED,
+            MEMORYINSTR to WebAssemblyColor.RESERVED,
+            MEMORYINSTR_MEMARG to WebAssemblyColor.RESERVED,
             ICONST to WebAssemblyColor.RESERVED,
             FCONST to WebAssemblyColor.RESERVED,
             NUMERICINSTR to WebAssemblyColor.RESERVED,
-            VALTYPE to WebAssemblyColor.RESERVED,
 
             IDENTIFIER to WebAssemblyColor.IDENTIFIER,
 
