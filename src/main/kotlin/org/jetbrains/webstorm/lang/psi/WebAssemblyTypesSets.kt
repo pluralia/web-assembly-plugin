@@ -1,15 +1,14 @@
-package org.jetbrains.webstorm.lang.lexer
+package org.jetbrains.webstorm.lang.psi
 
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import org.jetbrains.webstorm.lang.WebAssemblyLanguage
-import org.jetbrains.webstorm.lang.psi.WebAssemblyElementType
 
 import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes.*
 
-class WebAssemblyTokenTypesSets {
+class WebAssemblyTypesSets {
     var WEB_ASSEMBLY_FILE = IFileElementType("WebAssembly file", WebAssemblyLanguage)
 
     var WHITE_SPACE: IElementType = TokenType.WHITE_SPACE

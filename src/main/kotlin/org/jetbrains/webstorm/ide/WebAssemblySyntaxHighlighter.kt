@@ -6,11 +6,11 @@ import com.intellij.openapi.fileTypes.SyntaxHighlighterBase
 import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import org.jetbrains.webstorm.ide.colors.WebAssemblyColor
-import org.jetbrains.webstorm.lang.lexer.WebAssemblyLexerAdapter
+import org.jetbrains.webstorm.lang.lexer.WebAssemblyLexer
 import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes.*
 
 class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
-    override fun getHighlightingLexer(): Lexer = WebAssemblyLexerAdapter()
+    override fun getHighlightingLexer(): Lexer = WebAssemblyLexer()
 
     override fun getTokenHighlights(tokenType: IElementType): Array<out TextAttributesKey> =
         pack(tokenMap[tokenType]?.textAttributesKey)
@@ -73,9 +73,7 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
             RPAR to WebAssemblyColor.PARENTHESES,
 
             LINE_COMMENT to WebAssemblyColor.COMMENT,
-            BLOCK_COMMENT_START to WebAssemblyColor.COMMENT,
-            BLOCK_COMMENT_FINISH to WebAssemblyColor.COMMENT,
-            BLOCK_COMMENT_CHAR to WebAssemblyColor.COMMENT,
+            BLOCK_COMMENT to WebAssemblyColor.COMMENT,
 
             TokenType.BAD_CHARACTER to WebAssemblyColor.BAD_CHARACTER)
 }

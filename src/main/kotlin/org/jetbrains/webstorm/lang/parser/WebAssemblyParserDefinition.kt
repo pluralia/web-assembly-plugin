@@ -13,13 +13,13 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import org.jetbrains.webstorm.lang.WebAssemblyLanguage
-import org.jetbrains.webstorm.lang.lexer.WebAssemblyLexerAdapter
+import org.jetbrains.webstorm.lang.lexer.WebAssemblyLexer
 import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes
 import org.jetbrains.webstorm.lang.psi.WebAssemblyFile
 
 
 class WebAssemblyParserDefinition : ParserDefinition {
-    override fun createLexer(project: Project?): Lexer = WebAssemblyLexerAdapter()
+    override fun createLexer(project: Project?): Lexer = WebAssemblyLexer()
 
     override fun getWhitespaceTokens(): TokenSet = WHITE_SPACES
 

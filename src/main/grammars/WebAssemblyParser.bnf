@@ -17,8 +17,7 @@ webAssemblyFile ::= item_*
 
 private item_ ::= comment | module | modulefield+
 
-comment ::= LINE_COMMENT | blockcomment
-blockcomment ::= BLOCK_COMMENT_START (BLOCK_COMMENT_CHAR | blockcomment)* BLOCK_COMMENT_FINISH
+comment ::= LINE_COMMENT | BLOCK_COMMENT
 
 module ::= LPAR MODULEKEY IDENTIFIER? modulefield* RPAR
 modulefield ::= type | import | func | table | mem | global | export | start | elem | data

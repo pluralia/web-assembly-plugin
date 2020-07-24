@@ -1,9 +1,7 @@
 package org.jetbrains.webstorm.lang.lexer;
 
-import com.intellij.lexer.*;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
-import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes;
 
 %%
 
@@ -102,73 +100,73 @@ NUMERICINSTR = {VALTYPE}\.const
 
 %%
 <YYINITIAL> {
-    {VALTYPE}                                       { return WebAssemblyTypes.VALTYPE; }
+    {VALTYPE}                                       { return VALTYPE; }
 
-    {CONTROLINSTR}                                  { return WebAssemblyTypes.CONTROLINSTR; }
-    {CONTROLINSTR_IDX}                              { return WebAssemblyTypes.CONTROLINSTR_IDX; }
-    {BRTABLEINSTR}                                  { return WebAssemblyTypes.BRTABLEINSTR; }
-    {CALLINDIRECTINSTR}                             { return WebAssemblyTypes.CALLINDIRECTINSTR; }
+    {CONTROLINSTR}                                  { return CONTROLINSTR; }
+    {CONTROLINSTR_IDX}                              { return CONTROLINSTR_IDX; }
+    {BRTABLEINSTR}                                  { return BRTABLEINSTR; }
+    {CALLINDIRECTINSTR}                             { return CALLINDIRECTINSTR; }
 
-    {PARAMETRICINSTR}                               { return WebAssemblyTypes.PARAMETRICINSTR; }
+    {PARAMETRICINSTR}                               { return PARAMETRICINSTR; }
 
-    {VARIABLEINSTR_IDX}                             { return WebAssemblyTypes.VARIABLEINSTR_IDX; }
+    {VARIABLEINSTR_IDX}                             { return VARIABLEINSTR_IDX; }
 
-    {MEMORYINSTR}                                  { return WebAssemblyTypes.MEMORYINSTR; }
-    {MEMORYINSTR_MEMARG}                           { return WebAssemblyTypes.MEMORYINSTR_MEMARG; }
+    {MEMORYINSTR}                                   { return MEMORYINSTR; }
+    {MEMORYINSTR_MEMARG}                            { return MEMORYINSTR_MEMARG; }
 
-    {ICONST}                                        { return WebAssemblyTypes.ICONST; }
-    {FCONST}                                        { return WebAssemblyTypes.FCONST; }
-    {NUMERICINSTR}                                  { return WebAssemblyTypes.NUMERICINSTR; }
+    {FCONST}                                        { return FCONST; }
+    {ICONST}                                        { return ICONST; }
+    {NUMERICINSTR}                                  { return NUMERICINSTR; }
 
-    "func"                                          { return WebAssemblyTypes.FUNCKEY; }
-    "param"                                         { return WebAssemblyTypes.PARAMKEY; }
-    "result"                                        { return WebAssemblyTypes.RESULTKEY; }
-    "funcref"                                       { return WebAssemblyTypes.FUNCREFKEY; }
-    "mut"                                           { return WebAssemblyTypes.MUTKEY; }
+    "func"                                          { return FUNCKEY; }
+    "param"                                         { return PARAMKEY; }
+    "result"                                        { return RESULTKEY; }
+    "funcref"                                       { return FUNCREFKEY; }
+    "mut"                                           { return MUTKEY; }
 
-    "block"                                         { return WebAssemblyTypes.BLOCKKEY; }
-    "loop"                                          { return WebAssemblyTypes.LOOPKEY; }
-    "end"                                           { return WebAssemblyTypes.ENDKEY; }
-    "if"                                            { return WebAssemblyTypes.IFKEY; }
-    "else"                                          { return WebAssemblyTypes.ELSEKEY; }
-    "offset="                                       { return WebAssemblyTypes.OFFSETEQKEY; }
-    "align="                                        { return WebAssemblyTypes.ALIGNEQKEY; }
+    "block"                                         { return BLOCKKEY; }
+    "loop"                                          { return LOOPKEY; }
+    "end"                                           { return ENDKEY; }
+    "if"                                            { return IFKEY; }
+    "else"                                          { return ELSEKEY; }
+    "offset="                                       { return OFFSETEQKEY; }
+    "align="                                        { return ALIGNEQKEY; }
 
-    "type"                                          { return WebAssemblyTypes.TYPEKEY; }
-    "import"                                        { return WebAssemblyTypes.IMPORTKEY; }
-    "table"                                         { return WebAssemblyTypes.TABLEKEY; }
-    "memory"                                        { return WebAssemblyTypes.MEMORYKEY; }
-    "global"                                        { return WebAssemblyTypes.GLOBALKEY; }
-    "local"                                         { return WebAssemblyTypes.LOCALKEY; }
-    "export"                                        { return WebAssemblyTypes.EXPORTKEY; }
-    "elem"                                          { return WebAssemblyTypes.ELEMKEY; }
-    "data"                                          { return WebAssemblyTypes.DATAKEY; }
-    "offset"                                        { return WebAssemblyTypes.OFFSETKEY; }
-    "start"                                         { return WebAssemblyTypes.STARTKEY; }
-    "module"                                        { return WebAssemblyTypes.MODULEKEY; }
-    "global"                                        { return WebAssemblyTypes.GLOBALKEY; }
+    "type"                                          { return TYPEKEY; }
+    "import"                                        { return IMPORTKEY; }
+    "table"                                         { return TABLEKEY; }
+    "memory"                                        { return MEMORYKEY; }
+    "global"                                        { return GLOBALKEY; }
+    "local"                                         { return LOCALKEY; }
+    "export"                                        { return EXPORTKEY; }
+    "elem"                                          { return ELEMKEY; }
+    "data"                                          { return DATAKEY; }
+    "offset"                                        { return OFFSETKEY; }
+    "start"                                         { return STARTKEY; }
+    "module"                                        { return MODULEKEY; }
+    "global"                                        { return GLOBALKEY; }
 
-    {ID}                                            { return WebAssemblyTypes.IDENTIFIER; }
-    {STRING}                                        { return WebAssemblyTypes.STRING; }
-    {UN}                                            { return WebAssemblyTypes.UNSIGNED; }
-    {SN}                                            { return WebAssemblyTypes.SIGNED; }
-    {FN}                                            { return WebAssemblyTypes.FLOAT; }
+    {ID}                                            { return IDENTIFIER; }
+    {STRING}                                        { return STRING; }
+    {UN}                                            { return UNSIGNED; }
+    {SN}                                            { return SIGNED; }
+    {FN}                                            { return FLOAT; }
 
-    "("                                             { return WebAssemblyTypes.LPAR; }
-    ")"                                             { return WebAssemblyTypes.RPAR; }
+    "("                                             { return LPAR; }
+    ")"                                             { return RPAR; }
 
     {SPACE}+                                        { return TokenType.WHITE_SPACE; }
 
-    {LINECOMMENT}                                   { return WebAssemblyTypes.LINE_COMMENT; }
-    "(;"                                            { yybegin(BLOCKCHAR); return WebAssemblyTypes.BLOCK_COMMENT_START; }
-    ";)"                                            { yybegin(YYINITIAL); return WebAssemblyTypes.BLOCK_COMMENT_FINISH; }
+    {LINECOMMENT}                                   { return LINE_COMMENT; }
+    "(;"                                            { yybegin(BLOCKCHAR); return BLOCK_COMMENT_START; }
+    ";)"                                            { yybegin(YYINITIAL); return BLOCK_COMMENT_FINISH; }
 
     [^]                                             { return TokenType.BAD_CHARACTER; }
 }
 
 <BLOCKCHAR> {
-    [^;(]                                           { yybegin(BLOCKCHAR); return WebAssemblyTypes.BLOCK_COMMENT_CHAR; }
-    ";"[^)]                                         { yybegin(BLOCKCHAR); yypushback(1); return WebAssemblyTypes.BLOCK_COMMENT_CHAR; }
-    "("[^;]                                         { yybegin(BLOCKCHAR); yypushback(1); return WebAssemblyTypes.BLOCK_COMMENT_CHAR; }
+    [^;(]                                           { yybegin(BLOCKCHAR); return BLOCK_COMMENT_CHAR; }
+    ";"[^)]                                         { yybegin(BLOCKCHAR); yypushback(1); return BLOCK_COMMENT_CHAR; }
+    "("[^;]                                         { yybegin(BLOCKCHAR); yypushback(1); return BLOCK_COMMENT_CHAR; }
     [^]                                             { yybegin(YYINITIAL); yypushback(yylength()); }
 }
