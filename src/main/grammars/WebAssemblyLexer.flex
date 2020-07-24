@@ -64,14 +64,22 @@ CALLINDIRECTINSTR = call_indirect
 PARAMETRICINSTR = drop | select
 
 // variable
-VARIABLEINSTR_IDX = local\.([gs]et | tee)
-                  | global\.[gs]et
+VARIABLEINSTR_IDX = local\.([gs]et | tee) | global\.[gs]et
+                  // WebAssembly v1.0
+                  | [gs]et_(local | global) | tee_local
 
 // memory
 MEMORYINSTR = memory\.(size | grow)
+            // WebAssembly v1.0
+            | (current | grow)_memory
 MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
                    | i32\.(load((8 | 16)_[su]) | store(8 | 16))
                    | i64\.(load((8 | 16 | 32)_[su]) | store(8 | 16 | 32))
+                   // WebAssembly v1.0
+                   | i32\.atomic\.(wake | load((8 | 16)_[su])?
+                                 | store(8 | 16)? | rmw((8 | 16)_u)?\.(add | sub | and | x?or | (cmp)?xchg))
+                   | i32\.atomic\.(wake | load((8 | 16 | 32)_[su])?
+                                 | store(8 | 16 | 32)? | rmw((8 | 16 | 32)_u)?\.(add | sub | and | x?or | (cmp)?xchg))
 
 // numetic
 ICONST = i(32 | 64)\.const
@@ -85,6 +93,12 @@ NUMERICINSTR = {VALTYPE}\.const
                                  | copysign | eq | ne | [lg][te]] | convert_i(32 | 64)_[su])
              | f32\.demote_f64 | f64\.promote_f32
              | i32\.reinterpret_f32 | i64\.reinterpret_f64 | f32\.reinterpret_i32 | f64\.reinterpret_i64
+             // WebAssembly v1.0
+             | i32\.wrap\/i64
+             | i(32 | 64)\.(trunc_[su]\/f | convert[su]\/i)(32 | 64)
+             | i64\.extend_[su]\/i32
+             | f32\.demote\/f64 | f64\.promote\/f32
+             | i32\.reinterpret\/f32 | i64\.reinterpret\/f64 | f32\.reinterpret\/i32 | f64\.reinterpret\/i64
 
 %%
 <YYINITIAL> {
