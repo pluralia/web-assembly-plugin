@@ -7,7 +7,7 @@ import org.jetbrains.webstorm.lang.WebAssemblyLanguage
 import javax.swing.Icon
 
 class WebAssemblyTokenType(debugName: String) : IElementType(debugName, WebAssemblyLanguage) {
-    override fun toString(): String = "WebAssemblerTokenType." + super.toString()
+    override fun toString(): String = "WebAssemblyToken." + super.toString()
 }
 
 class WebAssemblyElementType(debugName: String) : IElementType(debugName, WebAssemblyLanguage)

@@ -41,7 +41,7 @@ class WebAssemblyParserDefinition : ParserDefinition {
 
     companion object {
         val WHITE_SPACES: TokenSet = TokenSet.create(TokenType.WHITE_SPACE)
-        val COMMENTS: TokenSet = TokenSet.create(WebAssemblyTypes.COMMENT)
+        val COMMENTS: TokenSet     = TokenSet.create(WebAssemblyTypes.LINE_COMMENT, WebAssemblyTypes.BLOCK_COMMENT)
         val FILE: IFileElementType = IFileElementType(WebAssemblyLanguage)
     }
 }

@@ -1,7 +1,9 @@
 package org.jetbrains.webstorm.lang.lexer;
 
+import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
+import static org.jetbrains.webstorm.lang.psi.WebAssemblyTypes.*;
 
 %%
 
@@ -81,7 +83,7 @@ MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
 
 // numetic
 ICONST = i(32 | 64)\.const
-FCONST = i(32 | 64)\.const
+FCONST = f(32 | 64)\.const
 NUMERICINSTR = {VALTYPE}\.const
              | i(32 | 64)\.(c[lt]z | popcnt | add | sub | mul | (div | rem | shr)_[su] | and | x?or | shl | rot[lr]
                                    | eqz? | ne | [lg][te]_[su] | trunc_((f | sat)(32 | 64)_[su]))
@@ -170,3 +172,5 @@ NUMERICINSTR = {VALTYPE}\.const
     "("[^;]                                         { yybegin(BLOCKCHAR); yypushback(1); return BLOCK_COMMENT_CHAR; }
     [^]                                             { yybegin(YYINITIAL); yypushback(yylength()); }
 }
+
+[^]                                                 { return TokenType.BAD_CHARACTER; }
