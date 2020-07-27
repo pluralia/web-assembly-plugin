@@ -25,10 +25,17 @@ dependencies {
 intellij {
     version = "IU-2020.1.2"
 }
+
 tasks {
+    // switch off autoreloading of the plugin
+    runIde {
+        systemProperty("idea.auto.reload.plugins", false)
+    }
+
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
