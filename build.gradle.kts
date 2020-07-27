@@ -39,7 +39,12 @@ tasks {
     compileTestKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
+
+    test {
+        systemProperty("idea.home.path", "\$HOME/IdeaProjects")
+    }
 }
+
 tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
     changeNotes("""
       Add change notes here.<br>

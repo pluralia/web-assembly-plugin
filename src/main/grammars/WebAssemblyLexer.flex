@@ -27,7 +27,12 @@ import static org.jetbrains.webstorm.lang.psi.WebAssemblyTypes.*;
 
 %state BLOCKCOMMENTST
 
-SPACE = [\s\t\n\r]
+WHITE_SPACE = [\s\t\n\r]+
+
+// comments
+LINECOMMENT = ;;.*
+BLOCKCOMMENTSTART = "(;"
+BLOCKCOMMENTEND = ";)"
 
 // integers
 SIGN = [+-]
@@ -35,27 +40,27 @@ DIGIT = [0-9]
 HEXDIGIT = {DIGIT} | [a-fA-F]
 NUM = {DIGIT} (_? {DIGIT})*
 HEXNUM = {HEXDIGIT} (_? {HEXDIGIT})*
-
 UN = {NUM} | 0x {HEXNUM}
 SN = {SIGN} ({NUM} | 0x {HEXNUM})
 
 // floating-point
-FRAC = {NUM}
-HEXFRAC = {HEXNUM}
-FLOAT = {NUM} (\. {FRAC}?)? ([Ee] {SIGN}? {NUM})?
-HEXFLOAT = 0x {HEXNUM} (\. {HEXFRAC}?)? ([Pp] {SIGN}? {NUM})?
-
+FLOAT = {NUM} (\. {NUM}?)? ([Ee] {SIGN}? {NUM})?
+HEXFLOAT = 0x {HEXNUM} (\. {HEXNUM}?)? ([Pp] {SIGN}? {NUM})?
 FN = {SIGN}? ({FLOAT} | {HEXFLOAT} | inf | nan | nan:0x {HEXNUM})
 
 // string
-STRING = \" {STRINGELEM}* \"
-STRINGELEM = \\ {HEXDIGIT} {HEXDIGIT} | \\u\{ {HEXNUM} } | [ !#-\[\]-~] | \\t | \\n | \\r | \\\" | \\′ | \\
+STRING = \" ((\\ {HEXDIGIT} {HEXDIGIT}) | (\\u\{ {HEXNUM} }) | [ !#-\[\]-~] | \\t | \\n | \\r | \\\" | \\′ | \\\\)* \"
 
 // identifiers
 ID = \$ ({DIGIT} | [A-Za-z!#$%&′*+\-./:<=>?@\\\^_`|~])+
 
 // types
 VALTYPE = [if] (32 | 64)
+
+FUNCREF = "funcref"
+        // WebAssembly v1.0
+        | "anyfunc"
+
 
 // instructions
 // control
@@ -80,9 +85,10 @@ MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
                    | i32\.(load((8 | 16)_[su]) | store(8 | 16))
                    | i64\.(load((8 | 16 | 32)_[su]) | store(8 | 16 | 32))
                    // WebAssembly v1.0
-                   | i32\.atomic\.(wake | load((8 | 16)_[su])?
+                   | atomic\.wake
+                   | i32\.atomic\.(wait | load((8 | 16)_[su])?
                                  | store(8 | 16)? | rmw((8 | 16)_u)?\.(add | sub | and | x?or | (cmp)?xchg))
-                   | i32\.atomic\.(wake | load((8 | 16 | 32)_[su])?
+                   | i64\.atomic\.(wait | load((8 | 16 | 32)_[su])?
                                  | store(8 | 16 | 32)? | rmw((8 | 16 | 32)_u)?\.(add | sub | and | x?or | (cmp)?xchg))
 
 // numeric
@@ -104,14 +110,6 @@ NUMERICINSTR = {VALTYPE}\.const
              | f32\.demote\/f64 | f64\.promote\/f32
              | i32\.reinterpret\/f32 | i64\.reinterpret\/f64 | f32\.reinterpret\/i32 | f64\.reinterpret\/i64
 
-FUNCREF = "funcref"
-        // WebAssembly v1.0
-        | "anyfunc"
-
-// comments
-LINECOMMENT = ;;.*
-BLOCKCOMMENTSTART = "(;"
-BLOCKCOMMENTEND = ";)"
 
 %%
 
@@ -140,7 +138,25 @@ BLOCKCOMMENTEND = ";)"
 }
 
 <YYINITIAL> {
+    {WHITE_SPACE}               { return TokenType.WHITE_SPACE; }
+    {LINECOMMENT}               { return LINE_COMMENT; }
+    {BLOCKCOMMENTSTART}         { yybegin(BLOCKCOMMENTST); blockCommentDepth = 0; blockCommentStart = getTokenStart(); }
+
+    // types
     {VALTYPE}                   { return VALTYPE; }
+    "func"                      { return FUNCKEY; }
+    "param"                     { return PARAMKEY; }
+    "result"                    { return RESULTKEY; }
+    {FUNCREF}                   { return FUNCREFKEY; }
+    "mut"                       { return MUTKEY; }
+
+    // instructions
+    "block"                     { return BLOCKKEY; }
+    "loop"                      { return LOOPKEY; }
+    "end"                       { return ENDKEY; }
+    "if"                        { return IFKEY; }
+    "then"                      { return THENKEY; }
+    "else"                      { return ELSEKEY; }
 
     {CONTROLINSTR}              { return CONTROLINSTR; }
     {CONTROLINSTR_IDX}          { return CONTROLINSTR_IDX; }
@@ -151,6 +167,8 @@ BLOCKCOMMENTEND = ";)"
 
     {VARIABLEINSTR_IDX}         { return VARIABLEINSTR_IDX; }
 
+    "offset="                   { return OFFSETEQKEY; }
+    "align="                    { return ALIGNEQKEY; }
     {MEMORYINSTR}               { return MEMORYINSTR; }
     {MEMORYINSTR_MEMARG}        { return MEMORYINSTR_MEMARG; }
 
@@ -158,22 +176,7 @@ BLOCKCOMMENTEND = ";)"
     {ICONST}                    { return ICONST; }
     {NUMERICINSTR}              { return NUMERICINSTR; }
 
-    {FUNCREF}                   { return FUNCREFKEY; }
-      
-    "func"                      { return FUNCKEY; }
-    "param"                     { return PARAMKEY; }
-    "result"                    { return RESULTKEY; }
-    "mut"                       { return MUTKEY; }
-
-    "block"                     { return BLOCKKEY; }
-    "loop"                      { return LOOPKEY; }
-    "end"                       { return ENDKEY; }
-    "if"                        { return IFKEY; }
-    "then"                      { return THENKEY; }
-    "else"                      { return ELSEKEY; }
-    "offset="                   { return OFFSETEQKEY; }
-    "align="                    { return ALIGNEQKEY; }
-
+    // modules
     "type"                      { return TYPEKEY; }
     "import"                    { return IMPORTKEY; }
     "table"                     { return TABLEKEY; }
@@ -181,25 +184,20 @@ BLOCKCOMMENTEND = ";)"
     "global"                    { return GLOBALKEY; }
     "local"                     { return LOCALKEY; }
     "export"                    { return EXPORTKEY; }
+    "start"                     { return STARTKEY; }
     "elem"                      { return ELEMKEY; }
     "data"                      { return DATAKEY; }
     "offset"                    { return OFFSETKEY; }
-    "start"                     { return STARTKEY; }
     "module"                    { return MODULEKEY; }
-    "global"                    { return GLOBALKEY; }
 
-    {ID}                        { return IDENTIFIER; }
-    {STRING}                    { return STRING; }
+    // other tokens
     {UN}                        { return UNSIGNED; }
     {SN}                        { return SIGNED; }
     {FN}                        { return FLOAT; }
-
+    {STRING}                    { return STRING; }
+    {ID}                        { return IDENTIFIER; }
     "("                         { return LPAR; }
     ")"                         { return RPAR; }
-
-    {SPACE}+                    { return TokenType.WHITE_SPACE; }
-    {LINECOMMENT}               { return LINE_COMMENT; }
-    {BLOCKCOMMENTSTART}         { yybegin(BLOCKCOMMENTST); blockCommentDepth = 0; blockCommentStart = getTokenStart(); }
 
     [^]                         { return TokenType.BAD_CHARACTER; }
 }

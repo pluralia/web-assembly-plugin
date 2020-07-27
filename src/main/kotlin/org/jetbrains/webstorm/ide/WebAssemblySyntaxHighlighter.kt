@@ -17,9 +17,13 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
 
     private val tokenMap: Map<IElementType, WebAssemblyColor> =
         hashMapOf(
+            // comments
+            LINE_COMMENT to WebAssemblyColor.COMMENT,
+            BLOCK_COMMENT to WebAssemblyColor.COMMENT,
+
+            // module & modulefields
             MODULEKEY to WebAssemblyColor.KEYWORD,
 
-            // modulefield
             TYPEKEY to WebAssemblyColor.KEYWORD,
             IMPORTKEY to WebAssemblyColor.KEYWORD,
             FUNCKEY to WebAssemblyColor.KEYWORD,
@@ -60,19 +64,17 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
             FCONST to WebAssemblyColor.RESERVED,
             NUMERICINSTR to WebAssemblyColor.RESERVED,
 
-            IDENTIFIER to WebAssemblyColor.IDENTIFIER,
-
-            STRING to WebAssemblyColor.STRING,
-
+            // other tokens
             UNSIGNED to WebAssemblyColor.NUMBER,
             SIGNED to WebAssemblyColor.NUMBER,
             FLOAT to WebAssemblyColor.NUMBER,
 
+            STRING to WebAssemblyColor.STRING,
+
+            IDENTIFIER to WebAssemblyColor.IDENTIFIER,
+
             LPAR to WebAssemblyColor.PARENTHESES,
             RPAR to WebAssemblyColor.PARENTHESES,
-
-            LINE_COMMENT to WebAssemblyColor.COMMENT,
-            BLOCK_COMMENT to WebAssemblyColor.COMMENT,
 
             TokenType.BAD_CHARACTER to WebAssemblyColor.BAD_CHARACTER)
 }

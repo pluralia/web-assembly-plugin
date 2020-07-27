@@ -22,8 +22,10 @@ comment ::= LINE_COMMENT | BLOCK_COMMENT
 module ::= LPAR MODULEKEY IDENTIFIER? modulefield* RPAR
 modulefield ::= type | import | func | table | mem | global | export | start | elem | data
 
+
+// types
 functype ::= LPAR FUNCKEY param* result* RPAR
-param ::= LPAR PARAMKEY (VALTYPE+ | IDENTIFIER? VALTYPE) RPAR
+param ::= LPAR PARAMKEY (IDENTIFIER VALTYPE | VALTYPE+) RPAR
 result ::= LPAR RESULTKEY VALTYPE+ RPAR
 
 memtype ::= UNSIGNED UNSIGNED?      // limits
@@ -31,68 +33,86 @@ tabletype ::= memtype FUNCREFKEY
 
 globaltype ::= VALTYPE | LPAR MUTKEY VALTYPE RPAR
 
+
+// instructions
 instr ::= foldeinstr | plaininstr | blockinstr
 
-blocktype ::= typeuse | result?
-blockinstr ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype instr* ENDKEY IDENTIFIER?
-             | foldeinstr* IFKEY IDENTIFIER? blocktype instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
+blocktype ::= result | typeuse
+blockinstr ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* ENDKEY IDENTIFIER?
+             | foldeinstr* IFKEY IDENTIFIER? blocktype? instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
 plaininstr ::= CONTROLINSTR
              | CONTROLINSTR_IDX idx
-             | BRTABLEINSTR idx+
+             | BRTABLEINSTR idx*
              | CALLINDIRECTINSTR typeuse
              | PARAMETRICINSTR
              | VARIABLEINSTR_IDX idx
              | MEMORYINSTR
              | MEMORYINSTR_MEMARG (OFFSETEQKEY UNSIGNED)? (ALIGNEQKEY UNSIGNED)?
              | ICONST (UNSIGNED | SIGNED)
-             | FCONST FLOAT
+             | FCONST (FLOAT | UNSIGNED | SIGNED)
              | NUMERICINSTR
 foldeinstr ::= LPAR plaininstr foldeinstr* RPAR
-             | LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype instr* RPAR IDENTIFIER?
-             | LPAR IFKEY IDENTIFIER? blocktype foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR RPAR
+             | LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* RPAR IDENTIFIER?
+             | LPAR IFKEY IDENTIFIER? blocktype? foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR RPAR
 
+
+// modules
+// indices
 idx ::= UNSIGNED | IDENTIFIER
 
+// types
 type ::= LPAR TYPEKEY IDENTIFIER? functype RPAR
 
+// type uses
 typeuse ::= (LPAR TYPEKEY idx RPAR)? param* result*
 
+// imports
 import ::= LPAR IMPORTKEY STRING STRING importdesc RPAR
 importdesc ::= LPAR FUNCKEY IDENTIFIER? typeuse RPAR
              | LPAR TABLEKEY IDENTIFIER? tabletype RPAR
              | LPAR MEMORYKEY IDENTIFIER? memtype RPAR
              | LPAR GLOBALKEY IDENTIFIER? globaltype RPAR
+inline_import ::= LPAR IMPORTKEY STRING STRING RPAR
 
-impabbrev ::= LPAR IMPORTKEY STRING STRING RPAR
-expabbrev ::= LPAR EXPORTKEY STRING RPAR
+// functions
+func ::= LPAR FUNCKEY IDENTIFIER? (
+            inline_import typeuse
+          | (inline_export (inline_export | inline_import)?)? typeuse local* instr*
+         ) RPAR
+local ::= LPAR LOCALKEY (IDENTIFIER VALTYPE | VALTYPE+) RPAR
 
-func ::= LPAR FUNCKEY IDENTIFIER? (expabbrev | impabbrev)? typeuse local* instr* RPAR
-local ::= LPAR LOCALKEY (IDENTIFIER? VALTYPE | VALTYPE+) RPAR
+// tables
+table ::= LPAR TABLEKEY IDENTIFIER? (
+             inline_elem
+           | inline_import? tabletype
+           | inline_export (inline_import | inline_export | inline_elem)?
+          ) RPAR
 
-table ::= LPAR TABLEKEY IDENTIFIER? tableaux RPAR
-tableaux ::= impabbrev? tabletype
-           | expabbrev (impabbrev | expabbrev | elem_segm)?
-           | elem_segm
-elem_segm ::= FUNCREFKEY LPAR ELEMKEY idx* RPAR
+// memories
+mem ::= LPAR MEMORYKEY IDENTIFIER? (
+           inline_data
+         | inline_import? memtype
+         | inline_export (inline_import | inline_export | inline_data)?
+        ) RPAR
 
-mem ::= LPAR MEMORYKEY IDENTIFIER? memaux RPAR
-memaux ::= impabbrev? memtype
-         | expabbrev (impabbrev | expabbrev | data_segm)?
-data_segm ::= LPAR DATAKEY datastring RPAR
+// globals
+global ::= LPAR GLOBALKEY IDENTIFIER? (
+              inline_import globaltype
+            | (inline_export (inline_import | inline_export)?)? globaltype instr*
+           ) RPAR
 
-global ::= LPAR GLOBALKEY IDENTIFIER? globalaux RPAR
-globalaux ::= globaltype instr*
-            | impabbrev globaltype
-            | expabbrev (expabbrev | impabbrev)?
-
+// exports
 export ::= LPAR EXPORTKEY STRING exportdesc RPAR
 exportdesc ::= LPAR (FUNCKEY | TABLEKEY | MEMORYKEY | GLOBALKEY) idx RPAR
+inline_export ::= LPAR EXPORTKEY STRING RPAR
 
+// start function
 start ::= LPAR STARTKEY idx RPAR
 
-instrabbrev ::= instr | LPAR OFFSETKEY instr* RPAR
+// element segments
+elem ::= LPAR ELEMKEY idx? (instr | LPAR OFFSETKEY instr* RPAR) idx* RPAR
+inline_elem ::= FUNCREFKEY LPAR ELEMKEY idx* RPAR
 
-elem ::= LPAR ELEMKEY idx? instrabbrev idx* RPAR
-
-data ::= LPAR DATAKEY idx? instrabbrev datastring RPAR
-datastring ::= STRING*
+// data segments
+data ::= LPAR DATAKEY idx? (instr | LPAR OFFSETKEY instr* RPAR) STRING* RPAR
+inline_data ::= LPAR DATAKEY STRING* RPAR
