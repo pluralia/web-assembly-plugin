@@ -48,8 +48,8 @@ plaininstr ::= CONTROLINSTR
              | FCONST FLOAT
              | NUMERICINSTR
 foldeinstr ::= LPAR plaininstr foldeinstr* RPAR
-             | LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype instr* RPAR
-             | LPAR IFKEY IDENTIFIER? blocktype foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR? RPAR
+             | LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype instr* RPAR IDENTIFIER?
+             | LPAR IFKEY IDENTIFIER? blocktype foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR RPAR
 
 idx ::= UNSIGNED | IDENTIFIER
 
@@ -70,23 +70,29 @@ func ::= LPAR FUNCKEY IDENTIFIER? (expabbrev | impabbrev)? typeuse local* instr*
 local ::= LPAR LOCALKEY (IDENTIFIER? VALTYPE | VALTYPE+) RPAR
 
 table ::= LPAR TABLEKEY IDENTIFIER? tableaux RPAR
-tableaux ::= (impabbrev | expabbrev)? tabletype
-           | FUNCREFKEY LPAR ELEMKEY idx* RPAR
+tableaux ::= impabbrev? tabletype
+           | expabbrev (impabbrev | expabbrev | elem_segm)?
+           | elem_segm
+elem_segm ::= FUNCREFKEY LPAR ELEMKEY idx* RPAR
 
 mem ::= LPAR MEMORYKEY IDENTIFIER? memaux RPAR
-memaux ::= (impabbrev | expabbrev)? memtype
-         | LPAR DATAKEY datastring RPAR
+memaux ::= impabbrev? memtype
+         | expabbrev (impabbrev | expabbrev | data_segm)?
+data_segm ::= LPAR DATAKEY datastring RPAR
 
-global ::= LPAR GLOBALKEY IDENTIFIER? (expabbrev | impabbrev)? globaltype instr* RPAR
+global ::= LPAR GLOBALKEY IDENTIFIER? globalaux RPAR
+globalaux ::= globaltype instr*
+            | impabbrev globaltype
+            | expabbrev (expabbrev | impabbrev)?
 
 export ::= LPAR EXPORTKEY STRING exportdesc RPAR
 exportdesc ::= LPAR (FUNCKEY | TABLEKEY | MEMORYKEY | GLOBALKEY) idx RPAR
 
 start ::= LPAR STARTKEY idx RPAR
 
-instrabbrev ::= instr | LPAR OFFSETKEY instr RPAR
+instrabbrev ::= instr | LPAR OFFSETKEY instr* RPAR
 
-elem ::= LPAR ELEMKEY idx? LPAR OFFSETKEY instrabbrev* RPAR idx* RPAR
+elem ::= LPAR ELEMKEY idx? instrabbrev idx* RPAR
 
-data ::= LPAR DATAKEY idx? LPAR OFFSETKEY instrabbrev* RPAR datastring* RPAR
+data ::= LPAR DATAKEY idx? instrabbrev datastring RPAR
 datastring ::= STRING*
