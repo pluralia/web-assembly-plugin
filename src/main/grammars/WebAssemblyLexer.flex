@@ -164,6 +164,7 @@ BLOCKCOMMENTEND = ";)"
     "loop"                      { return LOOPKEY; }
     "end"                       { return ENDKEY; }
     "if"                        { return IFKEY; }
+    "then"                      { return THENKEY; }
     "else"                      { return ELSEKEY; }
     "offset="                   { return OFFSETEQKEY; }
     "align="                    { return ALIGNEQKEY; }

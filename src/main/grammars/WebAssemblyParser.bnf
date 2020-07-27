@@ -31,11 +31,11 @@ tabletype ::= memtype FUNCREFKEY
 
 globaltype ::= VALTYPE | LPAR MUTKEY VALTYPE RPAR
 
-instr ::= plaininstr | blockinstr
+instr ::= foldeinstr | plaininstr | blockinstr
 
 blocktype ::= typeuse | result?
-blockinstr ::= (BLOCKKEY | LOOPKEY)  IDENTIFIER? blocktype instr* ENDKEY IDENTIFIER?
-             | IFKEY IDENTIFIER? blocktype instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
+blockinstr ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype instr* ENDKEY IDENTIFIER?
+             | foldeinstr* IFKEY IDENTIFIER? blocktype instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
 plaininstr ::= CONTROLINSTR
              | CONTROLINSTR_IDX idx
              | BRTABLEINSTR idx+
@@ -47,6 +47,9 @@ plaininstr ::= CONTROLINSTR
              | ICONST (UNSIGNED | SIGNED)
              | FCONST FLOAT
              | NUMERICINSTR
+foldeinstr ::= LPAR plaininstr foldeinstr* RPAR
+             | LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype instr* RPAR
+             | LPAR IFKEY IDENTIFIER? blocktype foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR? RPAR
 
 idx ::= UNSIGNED | IDENTIFIER
 

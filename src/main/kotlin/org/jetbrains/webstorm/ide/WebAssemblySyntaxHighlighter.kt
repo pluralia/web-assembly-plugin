@@ -40,6 +40,7 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
             LOOPKEY to WebAssemblyColor.KEYWORD,
             ENDKEY to WebAssemblyColor.KEYWORD,
             IFKEY to WebAssemblyColor.KEYWORD,
+            THENKEY to WebAssemblyColor.KEYWORD,
             ELSEKEY to WebAssemblyColor.KEYWORD,
             OFFSETKEY to WebAssemblyColor.KEYWORD,
             OFFSETEQKEY to WebAssemblyColor.KEYWORD,
