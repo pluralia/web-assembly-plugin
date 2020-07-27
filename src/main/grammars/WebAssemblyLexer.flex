@@ -104,6 +104,10 @@ NUMERICINSTR = {VALTYPE}\.const
              | f32\.demote\/f64 | f64\.promote\/f32
              | i32\.reinterpret\/f32 | i64\.reinterpret\/f64 | f32\.reinterpret\/i32 | f64\.reinterpret\/i64
 
+FUNCREF = "funcref"
+        // WebAssembly v1.0
+        | "anyfunc"
+
 // comments
 LINECOMMENT = ;;.*
 BLOCKCOMMENTSTART = "(;"
@@ -154,10 +158,11 @@ BLOCKCOMMENTEND = ";)"
     {ICONST}                    { return ICONST; }
     {NUMERICINSTR}              { return NUMERICINSTR; }
 
+    {FUNCREF}                   { return FUNCREFKEY; }
+      
     "func"                      { return FUNCKEY; }
     "param"                     { return PARAMKEY; }
     "result"                    { return RESULTKEY; }
-    "funcref"                   { return FUNCREFKEY; }
     "mut"                       { return MUTKEY; }
 
     "block"                     { return BLOCKKEY; }
