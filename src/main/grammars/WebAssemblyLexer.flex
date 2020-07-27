@@ -20,10 +20,14 @@ import static org.jetbrains.webstorm.lang.psi.WebAssemblyTypes.*;
 %type IElementType
 %unicode
 
-%state BLOCKCHAR
+%{
+    private int blockCommentStart;
+    private int blockCommentDepth;
+%}
+
+%state BLOCKCOMMENTST
 
 SPACE = [\s\t\n\r]
-LINECOMMENT = ;;.*
 
 // integers
 SIGN = [+-]
@@ -81,7 +85,7 @@ MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
                    | i32\.atomic\.(wake | load((8 | 16 | 32)_[su])?
                                  | store(8 | 16 | 32)? | rmw((8 | 16 | 32)_u)?\.(add | sub | and | x?or | (cmp)?xchg))
 
-// numetic
+// numeric
 ICONST = i(32 | 64)\.const
 FCONST = f(32 | 64)\.const
 NUMERICINSTR = {VALTYPE}\.const
@@ -100,77 +104,96 @@ NUMERICINSTR = {VALTYPE}\.const
              | f32\.demote\/f64 | f64\.promote\/f32
              | i32\.reinterpret\/f32 | i64\.reinterpret\/f64 | f32\.reinterpret\/i32 | f64\.reinterpret\/i64
 
+// comments
+LINECOMMENT = ;;.*
+BLOCKCOMMENTSTART = "(;"
+BLOCKCOMMENTEND = ";)"
+
 %%
+
+<BLOCKCOMMENTST> {
+    {BLOCKCOMMENTSTART} {
+        blockCommentDepth++;
+    }
+
+    <<EOF>> {
+        yybegin(YYINITIAL);
+        zzStartRead = blockCommentStart;
+        return BLOCK_COMMENT;
+    }
+
+    {BLOCKCOMMENTEND} {
+        if (blockCommentDepth > 0) {
+            blockCommentDepth--;
+        } else {
+            yybegin(YYINITIAL);
+            zzStartRead = blockCommentStart;
+            return BLOCK_COMMENT;
+        }
+    }
+
+    [^] {}
+}
+
 <YYINITIAL> {
-    {VALTYPE}                                       { return VALTYPE; }
+    {VALTYPE}                   { return VALTYPE; }
 
-    {CONTROLINSTR}                                  { return CONTROLINSTR; }
-    {CONTROLINSTR_IDX}                              { return CONTROLINSTR_IDX; }
-    {BRTABLEINSTR}                                  { return BRTABLEINSTR; }
-    {CALLINDIRECTINSTR}                             { return CALLINDIRECTINSTR; }
+    {CONTROLINSTR}              { return CONTROLINSTR; }
+    {CONTROLINSTR_IDX}          { return CONTROLINSTR_IDX; }
+    {BRTABLEINSTR}              { return BRTABLEINSTR; }
+    {CALLINDIRECTINSTR}         { return CALLINDIRECTINSTR; }
 
-    {PARAMETRICINSTR}                               { return PARAMETRICINSTR; }
+    {PARAMETRICINSTR}           { return PARAMETRICINSTR; }
 
-    {VARIABLEINSTR_IDX}                             { return VARIABLEINSTR_IDX; }
+    {VARIABLEINSTR_IDX}         { return VARIABLEINSTR_IDX; }
 
-    {MEMORYINSTR}                                   { return MEMORYINSTR; }
-    {MEMORYINSTR_MEMARG}                            { return MEMORYINSTR_MEMARG; }
+    {MEMORYINSTR}               { return MEMORYINSTR; }
+    {MEMORYINSTR_MEMARG}        { return MEMORYINSTR_MEMARG; }
 
-    {FCONST}                                        { return FCONST; }
-    {ICONST}                                        { return ICONST; }
-    {NUMERICINSTR}                                  { return NUMERICINSTR; }
+    {FCONST}                    { return FCONST; }
+    {ICONST}                    { return ICONST; }
+    {NUMERICINSTR}              { return NUMERICINSTR; }
 
-    "func"                                          { return FUNCKEY; }
-    "param"                                         { return PARAMKEY; }
-    "result"                                        { return RESULTKEY; }
-    "funcref"                                       { return FUNCREFKEY; }
-    "mut"                                           { return MUTKEY; }
+    "func"                      { return FUNCKEY; }
+    "param"                     { return PARAMKEY; }
+    "result"                    { return RESULTKEY; }
+    "funcref"                   { return FUNCREFKEY; }
+    "mut"                       { return MUTKEY; }
 
-    "block"                                         { return BLOCKKEY; }
-    "loop"                                          { return LOOPKEY; }
-    "end"                                           { return ENDKEY; }
-    "if"                                            { return IFKEY; }
-    "else"                                          { return ELSEKEY; }
-    "offset="                                       { return OFFSETEQKEY; }
-    "align="                                        { return ALIGNEQKEY; }
+    "block"                     { return BLOCKKEY; }
+    "loop"                      { return LOOPKEY; }
+    "end"                       { return ENDKEY; }
+    "if"                        { return IFKEY; }
+    "else"                      { return ELSEKEY; }
+    "offset="                   { return OFFSETEQKEY; }
+    "align="                    { return ALIGNEQKEY; }
 
-    "type"                                          { return TYPEKEY; }
-    "import"                                        { return IMPORTKEY; }
-    "table"                                         { return TABLEKEY; }
-    "memory"                                        { return MEMORYKEY; }
-    "global"                                        { return GLOBALKEY; }
-    "local"                                         { return LOCALKEY; }
-    "export"                                        { return EXPORTKEY; }
-    "elem"                                          { return ELEMKEY; }
-    "data"                                          { return DATAKEY; }
-    "offset"                                        { return OFFSETKEY; }
-    "start"                                         { return STARTKEY; }
-    "module"                                        { return MODULEKEY; }
-    "global"                                        { return GLOBALKEY; }
+    "type"                      { return TYPEKEY; }
+    "import"                    { return IMPORTKEY; }
+    "table"                     { return TABLEKEY; }
+    "memory"                    { return MEMORYKEY; }
+    "global"                    { return GLOBALKEY; }
+    "local"                     { return LOCALKEY; }
+    "export"                    { return EXPORTKEY; }
+    "elem"                      { return ELEMKEY; }
+    "data"                      { return DATAKEY; }
+    "offset"                    { return OFFSETKEY; }
+    "start"                     { return STARTKEY; }
+    "module"                    { return MODULEKEY; }
+    "global"                    { return GLOBALKEY; }
 
-    {ID}                                            { return IDENTIFIER; }
-    {STRING}                                        { return STRING; }
-    {UN}                                            { return UNSIGNED; }
-    {SN}                                            { return SIGNED; }
-    {FN}                                            { return FLOAT; }
+    {ID}                        { return IDENTIFIER; }
+    {STRING}                    { return STRING; }
+    {UN}                        { return UNSIGNED; }
+    {SN}                        { return SIGNED; }
+    {FN}                        { return FLOAT; }
 
-    "("                                             { return LPAR; }
-    ")"                                             { return RPAR; }
+    "("                         { return LPAR; }
+    ")"                         { return RPAR; }
 
-    {SPACE}+                                        { return TokenType.WHITE_SPACE; }
+    {SPACE}+                    { return TokenType.WHITE_SPACE; }
+    {LINECOMMENT}               { return LINE_COMMENT; }
+    {BLOCKCOMMENTSTART}         { yybegin(BLOCKCOMMENTST); blockCommentDepth = 0; blockCommentStart = getTokenStart(); }
 
-    {LINECOMMENT}                                   { return LINE_COMMENT; }
-    "(;"                                            { yybegin(BLOCKCHAR); return BLOCK_COMMENT_START; }
-    ";)"                                            { yybegin(YYINITIAL); return BLOCK_COMMENT_FINISH; }
-
-    [^]                                             { return TokenType.BAD_CHARACTER; }
+    [^]                         { return TokenType.BAD_CHARACTER; }
 }
-
-<BLOCKCHAR> {
-    [^;(]                                           { yybegin(BLOCKCHAR); return BLOCK_COMMENT_CHAR; }
-    ";"[^)]                                         { yybegin(BLOCKCHAR); yypushback(1); return BLOCK_COMMENT_CHAR; }
-    "("[^;]                                         { yybegin(BLOCKCHAR); yypushback(1); return BLOCK_COMMENT_CHAR; }
-    [^]                                             { yybegin(YYINITIAL); yypushback(yylength()); }
-}
-
-[^]                                                 { return TokenType.BAD_CHARACTER; }

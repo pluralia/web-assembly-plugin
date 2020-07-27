@@ -87,6 +87,3 @@ elem ::= LPAR ELEMKEY idx? LPAR OFFSETKEY instrabbrev* RPAR idx* RPAR
 
 data ::= LPAR DATAKEY idx? LPAR OFFSETKEY instrabbrev* RPAR datastring* RPAR
 datastring ::= STRING*
-
-
-only_lexer_tokens ::= BLOCK_COMMENT_START | BLOCK_COMMENT_FINISH | BLOCK_COMMENT_CHAR
