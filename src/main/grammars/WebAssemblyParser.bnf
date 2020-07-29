@@ -24,14 +24,16 @@ modulefield ::= type | import | func | table | mem | global | export | start | e
 
 
 // types
+valtype ::= NUMTYPE | REFTYPE
+
 functype ::= LPAR FUNCKEY param* result* RPAR
-param ::= LPAR PARAMKEY (IDENTIFIER VALTYPE | VALTYPE+) RPAR
-result ::= LPAR RESULTKEY VALTYPE+ RPAR
+param ::= LPAR PARAMKEY (IDENTIFIER valtype | valtype*) RPAR
+result ::= LPAR RESULTKEY valtype* RPAR
 
 memtype ::= UNSIGNED UNSIGNED?      // limits
-tabletype ::= memtype FUNCREFKEY
+tabletype ::= memtype REFTYPE
 
-globaltype ::= VALTYPE | LPAR MUTKEY VALTYPE RPAR
+globaltype ::= valtype | LPAR MUTKEY valtype RPAR
 
 
 // instructions
@@ -40,14 +42,30 @@ instr ::= foldeinstr | plaininstr | blockinstr
 blocktype ::= result | typeuse
 blockinstr ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* ENDKEY IDENTIFIER?
              | foldeinstr* IFKEY IDENTIFIER? blocktype? instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
-plaininstr ::= CONTROLINSTR
+plaininstr ::=
+             // control
+               CONTROLINSTR
              | CONTROLINSTR_IDX idx
-             | BRTABLEINSTR idx*
-             | CALLINDIRECTINSTR typeuse
+             | BRTABLEINSTR idx+
+             | CALLINDIRECTINSTR idx? typeuse
+             // reference
+             | REFDOTISNULLINST
+             | REFDOTNULLINSTR (FUNCKEY | EXTERNKEY)
+             | REFDOTFUNCINSTR idx
+             // parametric
              | PARAMETRICINSTR
+             // variable
              | VARIABLEINSTR_IDX idx
+             // table
+             | TABLEINSTR_IDX idx?
+             | TABLEINSTR_IDX_IDX idx? idx?
+             | TABLEINSTR_IDX_ELIDX idx idx?
+             | TABLEINSTR_ELIDX idx
+             // memory
              | MEMORYINSTR
+             | MEMORYINSTR_IDX idx
              | MEMORYINSTR_MEMARG (OFFSETEQKEY UNSIGNED)? (ALIGNEQKEY UNSIGNED)?
+             // numeric
              | ICONST (UNSIGNED | SIGNED)
              | FCONST (FLOAT | UNSIGNED | SIGNED)
              | NUMERICINSTR
@@ -79,7 +97,7 @@ func ::= LPAR FUNCKEY IDENTIFIER? (
             inline_import typeuse
           | (inline_export (inline_export | inline_import)?)? typeuse local* instr*
          ) RPAR
-local ::= LPAR LOCALKEY (IDENTIFIER VALTYPE | VALTYPE+) RPAR
+local ::= LPAR LOCALKEY (IDENTIFIER valtype | valtype*) RPAR
 
 // tables
 table ::= LPAR TABLEKEY IDENTIFIER? (
@@ -110,12 +128,17 @@ inline_export ::= LPAR EXPORTKEY STRING RPAR
 start ::= LPAR STARTKEY idx RPAR
 
 // element segments
-elem ::= LPAR ELEMKEY idx? (instr | LPAR OFFSETKEY instr* RPAR) idx* RPAR
-inline_elem ::= FUNCREFKEY LPAR ELEMKEY idx* RPAR
+elem ::= LPAR ELEMKEY IDENTIFIER? (
+           (LPAR TABLEKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR)
+         | DECLAREKEY
+         )? elemlist RPAR
+elemlist ::= REFTYPE (instr | LPAR ITEMKEY instr* RPAR)* | FUNCKEY? idx*
+inline_elem ::= REFTYPE LPAR ELEMKEY (instr+ | elemlist)? RPAR
 
 // data segments
-data ::= LPAR DATAKEY idx? (instr | LPAR OFFSETKEY instr* RPAR) STRING* RPAR
+data ::= LPAR DATAKEY idx? ((LPAR MEMORYKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR))? STRING* RPAR
 inline_data ::= LPAR DATAKEY STRING* RPAR
+
 
 // only lexer tokens
 lexer_tokens ::= BAD_KEYWORD

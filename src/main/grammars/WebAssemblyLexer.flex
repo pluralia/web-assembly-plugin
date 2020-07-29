@@ -49,25 +49,29 @@ HEXFLOAT = 0x {HEXNUM} (\. {HEXNUM}?)? ([Pp] {SIGN}? {NUM})?
 FN = {SIGN}? ({FLOAT} | {HEXFLOAT} | inf | nan | nan:0x {HEXNUM})
 
 // string
-STRING = \" ((\\ {HEXDIGIT} {HEXDIGIT}) | (\\u\{ {HEXNUM} }) | [ !#-\[\]-~] | \\t | \\n | \\r | \\\" | \\′ | \\\\)* \"
+STRING = \" {STRINGELEM}* \"
+STRINGELEM = \\ {HEXDIGIT} {HEXDIGIT} | \\u\{ {HEXNUM} \} | [ !#-\[\]-~:] | \\t | \\n | \\r | \\\" | \\' | \\\\
 
 // identifiers
 ID = \$ ({DIGIT} | [A-Za-z!#$%&′*+\-./:<=>?@\\\^_`|~])+
 
-// types
-VALTYPE = [if] (32 | 64)
-
-FUNCREF = "funcref"
+// types (updated)
+NUMTYPE = [if] (32 | 64)
+REFTYPE = "funcref" | "externref"
         // WebAssembly v1.0
         | "anyfunc"
 
-
-// instructions
+// instructions (updated)
 // control
 CONTROLINSTR = unreachable | nop | return
 CONTROLINSTR_IDX = br(_if)? | call
 BRTABLEINSTR = br_table
 CALLINDIRECTINSTR = call_indirect
+
+// reference (new)
+REFDOTISNULLINST = ref\.is_null
+REFDOTNULLINSTR = ref\.null
+REFDOTFUNCINSTR = ref\.func
 
 // parametric
 PARAMETRICINSTR = drop | select
@@ -77,11 +81,18 @@ VARIABLEINSTR_IDX = local\.([gs]et | tee) | global\.[gs]et
                   // WebAssembly v1.0
                   | [gs]et_(local | global) | tee_local
 
-// memory
-MEMORYINSTR = memory\.(size | grow)
+// table (new)
+TABLEINSTR_IDX = table\.([gs]et | size | grow | fill)
+TABLEINSTR_IDX_IDX = table\.copy
+TABLEINSTR_IDX_ELIDX = table\.init
+TABLEINSTR_ELIDX = elem\.drop
+
+// memory (updated)
+MEMORYINSTR = memory\.(size | grow | fill | copy)
             // WebAssembly v1.0
             | (current | grow)_memory
-MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
+MEMORYINSTR_IDX = memory\.init | data\.drop
+MEMORYINSTR_MEMARG = {NUMTYPE}\.(load | store)
                    | i32\.(load((8 | 16)_[su]) | store(8 | 16))
                    | i64\.(load((8 | 16 | 32)_[su]) | store(8 | 16 | 32))
                    // WebAssembly v1.0
@@ -94,18 +105,19 @@ MEMORYINSTR_MEMARG = {VALTYPE}\.(load | store)
 // numeric
 ICONST = i(32 | 64)\.const
 FCONST = f(32 | 64)\.const
-NUMERICINSTR = {VALTYPE}\.const
+NUMERICINSTR = {NUMTYPE}\.const
              | i(32 | 64)\.(c[lt]z | popcnt | add | sub | mul | (div | rem | shr)_[su] | and | x?or | shl | rot[lr]
                                    | eqz? | ne | [lg][te]_[su] | trunc_((f | sat)(32 | 64)_[su]))
              | i32\.(wrap_i64 | extend(8 | 16)_s)
              | i64\.(extend_i32[su] | extend(8 | 16 | 32)_s)
              | f (32 | 64)\.(abs | neg | ceil | floor | trunc | nearest | sqrt | add | sub | mul | div | min | max
-                                 | copysign | eq | ne | [lg][te]] | convert_i(32 | 64)_[su])
+                                 | copysign | eq | ne | [lg][te] | convert_i(32 | 64)_[su])
              | f32\.demote_f64 | f64\.promote_f32
              | i32\.reinterpret_f32 | i64\.reinterpret_f64 | f32\.reinterpret_i32 | f64\.reinterpret_i64
              // WebAssembly v1.0
              | i32\.wrap\/i64
-             | i(32 | 64)\.(trunc_[su]\/f | convert[su]\/i)(32 | 64)
+             | i(32 | 64)\.(trunc_[su]\/f | convert_[su]\/i)(32 | 64)
+             | f(32 | 64)\.convert_[su]\/i(32 | 64)
              | i64\.extend_[su]\/i32
              | f32\.demote\/f64 | f64\.promote\/f32
              | i32\.reinterpret\/f32 | i64\.reinterpret\/f64 | f32\.reinterpret\/i32 | f64\.reinterpret\/i64
@@ -143,11 +155,12 @@ NUMERICINSTR = {VALTYPE}\.const
     {BLOCKCOMMENTSTART}         { yybegin(BLOCKCOMMENTST); blockCommentDepth = 0; blockCommentStart = getTokenStart(); }
 
     // types
-    {VALTYPE}                   { return VALTYPE; }
+    {NUMTYPE}                   { return NUMTYPE; }
+    {REFTYPE}                   { return REFTYPE; }
+    "extern"                    { return EXTERNKEY; }
     "func"                      { return FUNCKEY; }
     "param"                     { return PARAMKEY; }
     "result"                    { return RESULTKEY; }
-    {FUNCREF}                   { return FUNCREFKEY; }
     "mut"                       { return MUTKEY; }
 
     // instructions
@@ -163,13 +176,23 @@ NUMERICINSTR = {VALTYPE}\.const
     {BRTABLEINSTR}              { return BRTABLEINSTR; }
     {CALLINDIRECTINSTR}         { return CALLINDIRECTINSTR; }
 
+    {REFDOTISNULLINST}          { return REFDOTISNULLINST; }
+    {REFDOTNULLINSTR}           { return REFDOTNULLINSTR; }
+    {REFDOTFUNCINSTR}           { return REFDOTFUNCINSTR; }
+
     {PARAMETRICINSTR}           { return PARAMETRICINSTR; }
 
     {VARIABLEINSTR_IDX}         { return VARIABLEINSTR_IDX; }
 
+    {TABLEINSTR_IDX}            { return TABLEINSTR_IDX; }
+    {TABLEINSTR_IDX_IDX}        { return TABLEINSTR_IDX_IDX; }
+    {TABLEINSTR_IDX_ELIDX}      { return TABLEINSTR_IDX_ELIDX; }
+    {TABLEINSTR_ELIDX}          { return TABLEINSTR_ELIDX; }
+
     "offset="                   { return OFFSETEQKEY; }
     "align="                    { return ALIGNEQKEY; }
     {MEMORYINSTR}               { return MEMORYINSTR; }
+    {MEMORYINSTR_IDX}           { return MEMORYINSTR_IDX; }
     {MEMORYINSTR_MEMARG}        { return MEMORYINSTR_MEMARG; }
 
     {FCONST}                    { return FCONST; }
@@ -186,8 +209,10 @@ NUMERICINSTR = {VALTYPE}\.const
     "export"                    { return EXPORTKEY; }
     "start"                     { return STARTKEY; }
     "elem"                      { return ELEMKEY; }
-    "data"                      { return DATAKEY; }
     "offset"                    { return OFFSETKEY; }
+    "declare"                   { return DECLAREKEY; }
+    "item"                      { return ITEMKEY; }
+    "data"                      { return DATAKEY; }
     "module"                    { return MODULEKEY; }
 
     // other tokens
@@ -199,6 +224,7 @@ NUMERICINSTR = {VALTYPE}\.const
     "("                         { return LPAR; }
     ")"                         { return RPAR; }
 
-    [a-zA-Z0-9.]+               { return BAD_KEYWORD; }
+    [^()$\s\t\n\r=]+            { return BAD_KEYWORD; }
+
     [^]                         { return TokenType.BAD_CHARACTER; }
 }
