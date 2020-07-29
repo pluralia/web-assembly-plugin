@@ -23,15 +23,10 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "IU-2020.1.2"
+    version = "IU-2020.2"
 }
 
 tasks {
-    // switch off autoreloading of the plugin
-    runIde {
-        systemProperty("idea.auto.reload.plugins", false)
-    }
-
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"
     }
