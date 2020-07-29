@@ -116,3 +116,6 @@ inline_elem ::= FUNCREFKEY LPAR ELEMKEY idx* RPAR
 // data segments
 data ::= LPAR DATAKEY idx? (instr | LPAR OFFSETKEY instr* RPAR) STRING* RPAR
 inline_data ::= LPAR DATAKEY STRING* RPAR
+
+// only lexer tokens
+lexer_tokens ::= BAD_KEYWORD

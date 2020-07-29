@@ -76,5 +76,6 @@ class WebAssemblySyntaxHighlighter : SyntaxHighlighterBase() {
             LPAR to WebAssemblyColor.PARENTHESES,
             RPAR to WebAssemblyColor.PARENTHESES,
 
+            BAD_KEYWORD to WebAssemblyColor.BAD_CHARACTER,
             TokenType.BAD_CHARACTER to WebAssemblyColor.BAD_CHARACTER)
 }

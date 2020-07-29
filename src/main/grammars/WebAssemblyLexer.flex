@@ -199,5 +199,6 @@ NUMERICINSTR = {VALTYPE}\.const
     "("                         { return LPAR; }
     ")"                         { return RPAR; }
 
+    [a-zA-Z0-9.]+               { return BAD_KEYWORD; }
     [^]                         { return TokenType.BAD_CHARACTER; }
 }
