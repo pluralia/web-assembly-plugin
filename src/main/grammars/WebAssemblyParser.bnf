@@ -141,4 +141,4 @@ inline_data ::= LPAR DATAKEY STRING* RPAR
 
 
 // only lexer tokens
-lexer_tokens ::= BAD_KEYWORD
+lexer_tokens ::= BAD_TOKEN

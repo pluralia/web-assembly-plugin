@@ -224,7 +224,7 @@ NUMERICINSTR = {NUMTYPE}\.const
     "("                         { return LPAR; }
     ")"                         { return RPAR; }
 
-    [^()$\s\t\n\r=]+            { return BAD_KEYWORD; }
+    [^()$\s\t\n\r=]+            { return BAD_TOKEN; }
 
     [^]                         { return TokenType.BAD_CHARACTER; }
 }
