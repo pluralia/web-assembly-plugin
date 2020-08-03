@@ -1,0 +1,33 @@
+package org.jetbrains.webstorm.lang.parser
+
+class WebAssemblyTestFunc : WebAssemblyTestBase("func") {
+    fun testFuncNamed() = doTest()
+    fun testLocal() = doTest()
+    fun testLocalEmpty() = doTest()
+    fun testLocalExnref() = doTest()
+    fun testLocalMulti() = doTest()
+    fun testNoSpace() = doTest()
+    fun testParamBinding() = doTest()
+    fun testParamExnref() = doTest()
+    fun testParamMulti() = doTest()
+    fun testParamType1() = doTest()
+    fun testParamType2() = doTest()
+    fun testResult() = doTest()
+    fun testResultEmpty() = doTest()
+    fun testResultExnref() = doTest()
+    fun testResultMulti() = doTest()
+    fun testSig() = doTest()
+    fun testSigMatch() = doTest()
+
+    fun testBadFuncName() = doTest()
+    fun testBadLocalBinding() = doTest()
+    fun testBadLocalBindingNoType() = doTest()
+    fun testBadLocalName() = doTest()
+    fun testBadLocalType() = doTest()
+    fun testBadLocalTypeList() = doTest()
+    fun testBadParam() = doTest()
+    fun testBadParamBinding() = doTest()
+    fun testBadParamName() = doTest()
+    fun testBadParamTypeList() = doTest()
+    fun testBadResultType() = doTest()
+}

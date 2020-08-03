@@ -19,7 +19,8 @@ WebAssembly File(0,79)
             PsiElement(WebAssemblyToken.IDENTIFIER)('$foo')(45,49)
             PsiWhiteSpace('\n      ')(49,56)
             WebAssemblyBlocktypeImpl(BLOCKTYPE)(56,56)
-              <empty list>
+              WebAssemblyTypeuseImpl(TYPEUSE)(56,56)
+                <empty list>
             WebAssemblyInstrImpl(INSTR)(56,59)
               WebAssemblyPlaininstrImpl(PLAININSTR)(56,59)
                 PsiElement(WebAssemblyToken.CONTROLINSTR)('nop')(56,59)
