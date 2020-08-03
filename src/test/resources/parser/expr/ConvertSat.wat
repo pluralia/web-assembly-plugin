@@ -2,33 +2,33 @@
 (module
   (func
     f32.const 0
-    i32.trunc_s:sat/f32
+    i32.trunc_s/f32
     drop
 
     f32.const 0
-    i32.trunc_u:sat/f32
+    i32.trunc_u/f32
     drop
 
     f64.const 0
-    i32.trunc_s:sat/f64
+    i32.trunc_s/f64
     drop
 
     f64.const 0
-    i32.trunc_u:sat/f64
+    i32.trunc_u/f64
     drop
 
     f32.const 0
-    i64.trunc_s:sat/f32
+    i64.trunc_s/f32
     drop
 
     f32.const 0
-    i64.trunc_u:sat/f32
+    i64.trunc_u/f32
     drop
 
     f64.const 0
-    i64.trunc_s:sat/f64
+    i64.trunc_s/f64
     drop
 
     f64.const 0
-    i64.trunc_u:sat/f64
+    i64.trunc_u/f64
     drop))
