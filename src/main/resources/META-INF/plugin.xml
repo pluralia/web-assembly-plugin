@@ -16,8 +16,11 @@
     <depends>com.intellij.modules.platform</depends>
 
     <extensions defaultExtensionNs="com.intellij">
-        <fileType name="WebAssembly file" implementationClass="org.jetbrains.webstorm.lang.psi.WebAssemblyFileType"
-                  fieldName="INSTANCE" language="WebAssembly" extensions="wat"/>
+        <fileType name="WebAssembly file"
+                  implementationClass="org.jetbrains.webstorm.lang.psi.WebAssemblyFileType"
+                  fieldName="INSTANCE"
+                  language="WebAssembly"
+                  extensions="wat"/>
 
         <lang.parserDefinition language="WebAssembly"
                                implementationClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParserDefinition"/>
@@ -26,6 +29,10 @@
                                        implementationClass="org.jetbrains.webstorm.ide.WebAssemblySyntaxHighlighterFactory"/>
 
         <colorSettingsPage implementation="org.jetbrains.webstorm.ide.colors.WebAssemblyColorSettingPage"/>
+
+        <!-- Matcher -->
+        <lang.braceMatcher language="WebAssembly"
+                           implementationClass="org.jetbrains.webstorm.ide.WebAssemblyBraceMatcher"/>
     </extensions>
 
     <actions>
