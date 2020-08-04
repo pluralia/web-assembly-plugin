@@ -33,6 +33,11 @@
         <!-- Matcher -->
         <lang.braceMatcher language="WebAssembly"
                            implementationClass="org.jetbrains.webstorm.ide.WebAssemblyBraceMatcher"/>
+
+        <!-- Commenter -->
+        <lang.commenter language="WebAssembly"
+                        implementationClass="org.jetbrains.webstorm.lang.WebAssemblyCommenter"/>
+
     </extensions>
 
     <actions>
