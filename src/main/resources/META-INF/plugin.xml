@@ -38,6 +38,10 @@
         <lang.commenter language="WebAssembly"
                         implementationClass="org.jetbrains.webstorm.lang.WebAssemblyCommenter"/>
 
+        <!-- Completion -->
+        <completion.contributor language="WebAssembly"
+                                implementationClass="org.jetbrains.webstorm.lang.WebAssemblyKeywordCompletionContributor"/>
+
     </extensions>
 
     <actions>
