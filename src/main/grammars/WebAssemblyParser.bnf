@@ -13,35 +13,43 @@
   psiImplUtilClass="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyPsiImplUtil"
 }
 
-webAssemblyFile ::= item_*
+webAssemblyFile ::= item_
+private item_ ::= module | modulefield+ { pin=1 recoverWhile='item_recover_' }
+private item_recover_ ::= !<<eof>>
 
-private item_ ::= comment | module | modulefield+
-
-comment ::= LINE_COMMENT | BLOCK_COMMENT
-
-module ::= LPAR MODULEKEY IDENTIFIER? modulefield* RPAR
-modulefield ::= type | import | func | table | mem | global | export | start | elem | data
+module ::= LPAR MODULEKEY IDENTIFIER? modulefield* RPAR { pin=2 }
+modulefield ::= type | import | func | table | mem | global | export | start | elem | data { pin=1 }
 
 
 // types
 valtype ::= NUMTYPE | REFTYPE
 
-functype ::= LPAR FUNCKEY param* result* RPAR
-param ::= LPAR PARAMKEY (IDENTIFIER valtype | valtype*) RPAR
-result ::= LPAR RESULTKEY valtype* RPAR
+functype ::= LPAR FUNCKEY param* result* RPAR { pin=2 }
+param ::= LPAR PARAMKEY (IDENTIFIER valtype | valtype*) RPAR { pin=2 }
+result ::= LPAR RESULTKEY valtype* RPAR { pin=2 }
 
 memtype ::= UNSIGNED UNSIGNED?      // limits
 tabletype ::= memtype REFTYPE
 
-globaltype ::= valtype | LPAR MUTKEY valtype RPAR
+globaltype ::= valtype | globaltype_mut_
+private globaltype_mut_ ::= LPAR MUTKEY valtype RPAR { pin=2 }
 
 
 // instructions
 instr ::= foldeinstr | plaininstr | blockinstr
 
+foldeinstr ::= foldeinstr_plaininstr_ | foldeinstr_block_loop_ | foldeinstr_if_
+private foldeinstr_plaininstr_ ::= LPAR plaininstr foldeinstr* RPAR { pin=2 }
+private foldeinstr_block_loop_ ::= LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* RPAR IDENTIFIER? { pin=2 }
+private foldeinstr_if_ ::=
+        LPAR IFKEY IDENTIFIER? blocktype? foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR RPAR { pin=2 }
+
 blocktype ::= result | typeuse
-blockinstr ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* ENDKEY IDENTIFIER?
-             | foldeinstr* IFKEY IDENTIFIER? blocktype? instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER?
+blockinstr ::= blockinstr_block_loop_ | blockinstr_if_
+private blockinstr_block_loop_ ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* ENDKEY IDENTIFIER? { pin=1 }
+private blockinstr_if_ ::=
+        foldeinstr* IFKEY IDENTIFIER? blocktype? instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER? { pin=2 }
+
 plaininstr ::=
              // control
                CONTROLINSTR
@@ -64,14 +72,17 @@ plaininstr ::=
              // memory
              | MEMORYINSTR
              | MEMORYINSTR_IDX idx
-             | MEMORYINSTR_MEMARG (OFFSETEQKEY UNSIGNED)? (ALIGNEQKEY UNSIGNED)?
+             | MEMORYINSTR_MEMARG offseteq? aligneq?
              // numeric
              | ICONST (UNSIGNED | SIGNED)
              | FCONST (FLOAT | UNSIGNED | SIGNED)
              | NUMERICINSTR
-foldeinstr ::= LPAR plaininstr foldeinstr* RPAR
-             | LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* RPAR IDENTIFIER?
-             | LPAR IFKEY IDENTIFIER? blocktype? foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR RPAR
+
+offseteq ::= OFFSETEQKEY UNSIGNED { pin=1 recoverWhile='offseteq_recover_' }
+private offseteq_recover_ ::= !(aligneq | instr | RPAR)
+
+aligneq ::= ALIGNEQKEY UNSIGNED { pin=1 recoverWhile='aligneq_recover_' }
+private aligneq_recover_ ::= !(instr | RPAR)
 
 
 // modules
@@ -79,66 +90,68 @@ foldeinstr ::= LPAR plaininstr foldeinstr* RPAR
 idx ::= UNSIGNED | IDENTIFIER
 
 // types
-type ::= LPAR TYPEKEY IDENTIFIER? functype RPAR
+type ::= LPAR TYPEKEY IDENTIFIER? functype RPAR { pin=4 }
 
 // type uses
 typeuse ::= (LPAR TYPEKEY idx RPAR)? param* result*
 
 // imports
-import ::= LPAR IMPORTKEY STRING STRING importdesc RPAR
-importdesc ::= LPAR FUNCKEY IDENTIFIER? typeuse RPAR
-             | LPAR TABLEKEY IDENTIFIER? tabletype RPAR
-             | LPAR MEMORYKEY IDENTIFIER? memtype RPAR
-             | LPAR GLOBALKEY IDENTIFIER? globaltype RPAR
+import ::= LPAR IMPORTKEY STRING STRING importdesc RPAR { pin=2 }
+importdesc ::= importdesc_func_ | importdesc_table_ | importdesc_memory_ | importdesc_global_
+private importdesc_func_ ::= LPAR FUNCKEY IDENTIFIER? typeuse RPAR { pin=4 }
+private importdesc_table_ ::= LPAR TABLEKEY IDENTIFIER? tabletype RPAR { pin=4 }
+private importdesc_memory_ ::= LPAR MEMORYKEY IDENTIFIER? memtype RPAR { pin=4 }
+private importdesc_global_ ::= LPAR GLOBALKEY IDENTIFIER? globaltype RPAR { pin=4 }
 inline_import ::= LPAR IMPORTKEY STRING STRING RPAR
 
 // functions
 func ::= LPAR FUNCKEY IDENTIFIER? (
             inline_import typeuse
           | (inline_export (inline_export | inline_import)?)? typeuse local* instr*
-         ) RPAR
-local ::= LPAR LOCALKEY (IDENTIFIER valtype | valtype*) RPAR
+         ) RPAR { pin=2 }
+local ::= LPAR LOCALKEY (IDENTIFIER valtype | valtype*) RPAR { pin=2 }
 
 // tables
 table ::= LPAR TABLEKEY IDENTIFIER? (
              inline_elem
            | inline_import? tabletype
            | inline_export (inline_import | inline_export | inline_elem)?
-          ) RPAR
+          ) RPAR { pin=2 }
 
 // memories
 mem ::= LPAR MEMORYKEY IDENTIFIER? (
            inline_data
          | inline_import? memtype
          | inline_export (inline_import | inline_export | inline_data)?
-        ) RPAR
+        ) RPAR { pin=2 }
 
 // globals
 global ::= LPAR GLOBALKEY IDENTIFIER? (
               inline_import globaltype
             | (inline_export (inline_import | inline_export)?)? globaltype instr*
-           ) RPAR
+           ) RPAR { pin=2 }
 
 // exports
-export ::= LPAR EXPORTKEY STRING exportdesc RPAR
-exportdesc ::= LPAR (FUNCKEY | TABLEKEY | MEMORYKEY | GLOBALKEY) idx RPAR
+export ::= LPAR EXPORTKEY STRING exportdesc RPAR { pin=2 }
+exportdesc ::= LPAR (FUNCKEY | TABLEKEY | MEMORYKEY | GLOBALKEY) idx RPAR { pin=3 }
 inline_export ::= LPAR EXPORTKEY STRING RPAR
 
 // start function
-start ::= LPAR STARTKEY idx RPAR
+start ::= LPAR STARTKEY idx RPAR { pin=2 }
 
 // element segments
 elem ::= LPAR ELEMKEY IDENTIFIER? (
            (LPAR TABLEKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR)
          | DECLAREKEY
-         )? elemlist RPAR
+         )? elemlist RPAR { pin=2 }
 elemlist ::= REFTYPE (instr | LPAR ITEMKEY instr* RPAR)* | FUNCKEY? idx*
-inline_elem ::= REFTYPE LPAR ELEMKEY (instr+ | elemlist)? RPAR
+inline_elem ::= REFTYPE LPAR ELEMKEY (instr+ | elemlist)? RPAR { pin=3 }
 
 // data segments
-data ::= LPAR DATAKEY idx? ((LPAR MEMORYKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR))? STRING* RPAR
+data ::= LPAR DATAKEY idx? ((LPAR MEMORYKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR))? STRING* RPAR { pin=2 }
 inline_data ::= LPAR DATAKEY STRING* RPAR
 
 
-// only lexer tokens
+// not important for the parser
+comment ::= LINE_COMMENT | BLOCK_COMMENT
 lexer_tokens ::= BAD_TOKEN
