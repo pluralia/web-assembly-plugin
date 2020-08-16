@@ -79,8 +79,6 @@ WebAssembly File(0,248)
           PsiElement(WebAssemblyToken.STRING)('"writeHi"')(140,149)
           PsiElement(WebAssemblyToken.RPAR)(')')(149,150)
         PsiWhiteSpace('\n    ')(150,155)
-        WebAssemblyTypeuseImpl(TYPEUSE)(155,155)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(155,166)
           WebAssemblyPlaininstrImpl(PLAININSTR)(155,166)
             PsiElement(WebAssemblyToken.ICONST)('i32.const')(155,164)

@@ -12,8 +12,6 @@ WebAssembly File(0,82)
         PsiElement(WebAssemblyToken.LPAR)('(')(57,58)
         PsiElement(WebAssemblyToken.FUNCKEY)('func')(58,62)
         PsiWhiteSpace(' ')(62,63)
-        WebAssemblyTypeuseImpl(TYPEUSE)(63,63)
-          <empty list>
         WebAssemblyLocalImpl(LOCAL)(63,80)
           PsiElement(WebAssemblyToken.LPAR)('(')(63,64)
           PsiElement(WebAssemblyToken.LOCALKEY)('local')(64,69)

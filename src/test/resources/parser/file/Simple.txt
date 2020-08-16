@@ -41,8 +41,6 @@ WebAssembly File(0,130)
           PsiElement(WebAssemblyToken.STRING)('"exported_func"')(83,98)
           PsiElement(WebAssemblyToken.RPAR)(')')(98,99)
         PsiWhiteSpace('\n    ')(99,104)
-        WebAssemblyTypeuseImpl(TYPEUSE)(104,104)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(104,116)
           WebAssemblyPlaininstrImpl(PLAININSTR)(104,116)
             PsiElement(WebAssemblyToken.ICONST)('i32.const')(104,113)

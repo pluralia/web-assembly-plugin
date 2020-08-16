@@ -271,8 +271,6 @@ WebAssembly File(0,609)
         PsiElement(WebAssemblyToken.FUNCKEY)('func')(524,528)
         PsiWhiteSpace(' ')(528,529)
         PsiElement(WebAssemblyToken.IDENTIFIER)('$foo')(529,533)
-        WebAssemblyTypeuseImpl(TYPEUSE)(533,533)
-          <empty list>
         PsiElement(WebAssemblyToken.RPAR)(')')(533,534)
     PsiWhiteSpace('\n  ')(534,537)
     WebAssemblyModulefieldImpl(MODULEFIELD)(537,573)

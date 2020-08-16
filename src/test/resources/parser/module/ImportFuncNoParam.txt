@@ -17,8 +17,6 @@ WebAssembly File(0,55)
         WebAssemblyImportdescImpl(IMPORTDESC)(47,53)
           PsiElement(WebAssemblyToken.LPAR)('(')(47,48)
           PsiElement(WebAssemblyToken.FUNCKEY)('func')(48,52)
-          WebAssemblyTypeuseImpl(TYPEUSE)(52,52)
-            <empty list>
           PsiElement(WebAssemblyToken.RPAR)(')')(52,53)
         PsiElement(WebAssemblyToken.RPAR)(')')(53,54)
     PsiElement(WebAssemblyToken.RPAR)(')')(54,55)

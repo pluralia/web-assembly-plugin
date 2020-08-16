@@ -12,8 +12,6 @@ WebAssembly File(0,155)
         PsiWhiteSpace(' ')(34,35)
         PsiElement(WebAssemblyToken.IDENTIFIER)('$foo')(35,39)
         PsiWhiteSpace('\n    ')(39,44)
-        WebAssemblyTypeuseImpl(TYPEUSE)(44,44)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(44,55)
           WebAssemblyPlaininstrImpl(PLAININSTR)(44,55)
             PsiElement(WebAssemblyToken.ICONST)('i32.const')(44,53)

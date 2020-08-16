@@ -41,8 +41,6 @@ WebAssembly File(0,116)
           PsiElement(WebAssemblyToken.STRING)('"logIt"')(75,82)
           PsiElement(WebAssemblyToken.RPAR)(')')(82,83)
         PsiWhiteSpace('\n    ')(83,88)
-        WebAssemblyTypeuseImpl(TYPEUSE)(88,88)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(88,100)
           WebAssemblyPlaininstrImpl(PLAININSTR)(88,100)
             PsiElement(WebAssemblyToken.ICONST)('i32.const')(88,97)

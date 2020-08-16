@@ -72,8 +72,6 @@ WebAssembly File(0,232)
           PsiElement(WebAssemblyToken.STRING)('"incGlobal"')(141,152)
           PsiElement(WebAssemblyToken.RPAR)(')')(152,153)
         PsiWhiteSpace('\n        ')(153,162)
-        WebAssemblyTypeuseImpl(TYPEUSE)(162,162)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(162,229)
           WebAssemblyFoldeinstrImpl(FOLDEINSTR)(162,229)
             PsiElement(WebAssemblyToken.LPAR)('(')(162,163)

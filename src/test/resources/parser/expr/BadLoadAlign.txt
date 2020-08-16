@@ -12,8 +12,6 @@ WebAssembly File(0,477)
         PsiElement(WebAssemblyToken.LPAR)('(')(40,41)
         PsiElement(WebAssemblyToken.FUNCKEY)('func')(41,45)
         PsiWhiteSpace(' ')(45,46)
-        WebAssemblyTypeuseImpl(TYPEUSE)(46,46)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(46,80)
           WebAssemblyFoldeinstrImpl(FOLDEINSTR)(46,80)
             PsiElement(WebAssemblyToken.LPAR)('(')(46,47)

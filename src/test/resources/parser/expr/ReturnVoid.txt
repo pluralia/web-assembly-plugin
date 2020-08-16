@@ -10,8 +10,6 @@ WebAssembly File(0,41)
         PsiElement(WebAssemblyToken.LPAR)('(')(27,28)
         PsiElement(WebAssemblyToken.FUNCKEY)('func')(28,32)
         PsiWhiteSpace(' ')(32,33)
-        WebAssemblyTypeuseImpl(TYPEUSE)(33,33)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(33,39)
           WebAssemblyPlaininstrImpl(PLAININSTR)(33,39)
             PsiElement(WebAssemblyToken.CONTROLINSTR)('return')(33,39)

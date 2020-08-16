@@ -20,7 +20,5 @@ WebAssembly File(0,56)
         PsiElement(WebAssemblyToken.FUNCKEY)('func')(45,49)
         PsiWhiteSpace(' ')(49,50)
         PsiElement(WebAssemblyToken.IDENTIFIER)('$foo')(50,54)
-        WebAssemblyTypeuseImpl(TYPEUSE)(54,54)
-          <empty list>
         PsiElement(WebAssemblyToken.RPAR)(')')(54,55)
     PsiElement(WebAssemblyToken.RPAR)(')')(55,56)

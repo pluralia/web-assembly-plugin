@@ -21,8 +21,6 @@ WebAssembly File(0,162)
         PsiElement(WebAssemblyToken.LPAR)('(')(74,75)
         PsiElement(WebAssemblyToken.FUNCKEY)('func')(75,79)
         PsiWhiteSpace('\n    ')(79,84)
-        WebAssemblyTypeuseImpl(TYPEUSE)(84,84)
-          <empty list>
         WebAssemblyInstrImpl(INSTR)(84,95)
           WebAssemblyPlaininstrImpl(PLAININSTR)(84,95)
             PsiElement(WebAssemblyToken.ICONST)('i32.const')(84,93)
