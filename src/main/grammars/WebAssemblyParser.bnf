@@ -13,145 +13,227 @@
   psiImplUtilClass="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyPsiImplUtil"
 }
 
-webAssemblyFile ::= item_
-private item_ ::= module | modulefield+ { pin=1 recoverWhile='item_recover_' }
-private item_recover_ ::= !<<eof>>
+webAssemblyFile ::= item_*
+private item_         ::= module | modulefield
+private item_recover_ ::= !(RPAR | <<eof>>)
 
-module ::= LPAR MODULEKEY IDENTIFIER? modulefield* RPAR { pin=2 }
-modulefield ::= type | import | func | table | mem | global | export | start | elem | data { pin=1 }
+module              ::= LPAR module_aux_ RPAR { pin=2 }
+private module_aux_ ::= MODULEKEY IDENTIFIER? modulefield* { pin=1 recoverWhile='item_recover_' }
+
+modulefield ::= type | import | func | table | mem | global | export | start | elem | data
+
+idx ::= UNSIGNED | IDENTIFIER
 
 
-// types
+// TYPES
 valtype ::= NUMTYPE | REFTYPE
 
 functype ::= LPAR FUNCKEY param* result* RPAR { pin=2 }
-param ::= LPAR PARAMKEY (IDENTIFIER valtype | valtype*) RPAR { pin=2 }
-result ::= LPAR RESULTKEY valtype* RPAR { pin=2 }
 
-memtype ::= UNSIGNED UNSIGNED?      // limits
+param              ::= LPAR param_aux_ RPAR { pin=2 }
+private param_aux_ ::= PARAMKEY (IDENTIFIER valtype | valtype*) { pin=1 recoverWhile='item_recover_' }
+
+result              ::= LPAR result_aux_ RPAR { pin=2 }
+private result_aux_ ::= RESULTKEY valtype* { pin=1 recoverWhile='item_recover_' }
+
+memtype ::= UNSIGNED UNSIGNED?
+
 tabletype ::= memtype REFTYPE
 
 globaltype ::= valtype | globaltype_mut_
 private globaltype_mut_ ::= LPAR MUTKEY valtype RPAR { pin=2 }
 
+blocktype  ::= result | typeuse
 
-// instructions
+typeuse ::= LPAR TYPEKEY idx RPAR param+ result+
+          | LPAR TYPEKEY idx RPAR param+
+          | LPAR TYPEKEY idx RPAR        result+
+          | LPAR TYPEKEY idx RPAR
+          |                       param+ result+
+          |                       param+
+          |                              result+
+
+
+// INSTRUCTIONS
 instr ::= foldeinstr | plaininstr | blockinstr
 
-foldeinstr ::= foldeinstr_plaininstr_ | foldeinstr_block_loop_ | foldeinstr_if_
-private foldeinstr_plaininstr_ ::= LPAR plaininstr foldeinstr* RPAR { pin=2 }
-private foldeinstr_block_loop_ ::= LPAR (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* RPAR IDENTIFIER? { pin=2 }
-private foldeinstr_if_ ::=
-        LPAR IFKEY IDENTIFIER? blocktype? foldeinstr* LPAR THENKEY instr* RPAR LPAR ELSEKEY instr* RPAR RPAR { pin=2 }
+// foldeinstr
+foldeinstr ::= foldeinstr_plaininstr_ | foldeinstr_block_ | foldeinstr_loop_ | foldeinstr_if_
 
-blocktype ::= result | typeuse
-blockinstr ::= blockinstr_block_loop_ | blockinstr_if_
-private blockinstr_block_loop_ ::= (BLOCKKEY | LOOPKEY) IDENTIFIER? blocktype? instr* ENDKEY IDENTIFIER? { pin=1 }
-private blockinstr_if_ ::=
-        foldeinstr* IFKEY IDENTIFIER? blocktype? instr* (ELSEKEY IDENTIFIER? instr*)? ENDKEY IDENTIFIER? { pin=2 }
+private foldeinstr_plaininstr_     ::= LPAR foldeinstr_plaininstr_aux_ RPAR { pin=2 }
+private foldeinstr_plaininstr_aux_ ::= plaininstr foldeinstr* { pin=1 recoverWhile='item_recover_' }
 
+private foldeinstr_block_     ::= LPAR foldeinstr_block_aux_ RPAR IDENTIFIER? { pin=2 }
+private foldeinstr_block_aux_ ::= BLOCKKEY IDENTIFIER? blocktype? instr* { pin=1 recoverWhile='item_recover_' }
+
+private foldeinstr_loop_     ::= LPAR foldeinstr_loop_aux_ RPAR IDENTIFIER? { pin=2 }
+private foldeinstr_loop_aux_ ::= LOOPKEY IDENTIFIER? blocktype? instr* { pin=1 recoverWhile='item_recover_' }
+
+private foldeinstr_if_     ::= LPAR foldeinstr_if_aux_ RPAR { pin=2 }
+private foldeinstr_if_aux_ ::= IFKEY IDENTIFIER? blocktype? foldeinstr* foldeinstr_if_then_ foldeinstr_if_else_
+    { pin=1 recoverWhile='item_recover_' }
+private foldeinstr_if_then_     ::= LPAR foldeinstr_if_then_aux_ RPAR { pin=2 }
+private foldeinstr_if_then_aux_ ::= THENKEY instr* { pin=1 recoverWhile='item_recover_' }
+private foldeinstr_if_else_     ::= LPAR foldeinstr_if_else_aux_ RPAR { pin=2 }
+private foldeinstr_if_else_aux_ ::= ELSEKEY instr* { pin=1 recoverWhile='item_recover_' }
+
+
+// blockinstr
+blockinstr                  ::= blockinstr_block_ | blockinstr_loop_ | blockinstr_if_
+private blockinstr_recover_ ::= !(ENDKEY | <<eof>>)
+
+private blockinstr_block_     ::= BLOCKKEY blockinstr_block_aux_ ENDKEY IDENTIFIER? { pin=1 }
+private blockinstr_block_aux_ ::= IDENTIFIER? blocktype? instr* { recoverWhile='blockinstr_recover_' }
+
+private blockinstr_loop_     ::= LOOPKEY blockinstr_loop_aux_ ENDKEY IDENTIFIER? { pin=1 }
+private blockinstr_loop_aux_ ::= IDENTIFIER? blocktype? instr* { recoverWhile='blockinstr_recover_' }
+
+private blockinstr_if_     ::= foldeinstr* IFKEY blockinstr_if_aux_ ENDKEY IDENTIFIER? { pin=2 }
+private blockinstr_if_aux_ ::= IDENTIFIER? blocktype? instr* (ELSEKEY IDENTIFIER? instr*)? { recoverWhile='blockinstr_recover_' }
+
+// plaininstr
 plaininstr ::=
              // control
-               CONTROLINSTR
-             | CONTROLINSTR_IDX idx
-             | BRTABLEINSTR idx+
-             | CALLINDIRECTINSTR idx? typeuse
+               CONTROLINSTR | CONTROLINSTR_IDX idx | BRTABLEINSTR idx+ | CALLINDIRECTINSTR idx? typeuse?
              // reference
-             | REFDOTISNULLINST
-             | REFDOTNULLINSTR (FUNCKEY | EXTERNKEY)
-             | REFDOTFUNCINSTR idx
+             | REFDOTISNULLINST | REFDOTNULLINSTR (FUNCKEY | EXTERNKEY) | REFDOTFUNCINSTR idx
              // parametric
              | PARAMETRICINSTR
              // variable
              | VARIABLEINSTR_IDX idx
              // table
-             | TABLEINSTR_IDX idx?
-             | TABLEINSTR_IDX_IDX idx? idx?
-             | TABLEINSTR_IDX_ELIDX idx idx?
-             | TABLEINSTR_ELIDX idx
+             | TABLEINSTR_IDX idx? | TABLEINSTR_IDX_IDX idx? idx? | TABLEINSTR_IDX_ELIDX idx idx? | TABLEINSTR_ELIDX idx
              // memory
-             | MEMORYINSTR
-             | MEMORYINSTR_IDX idx
-             | MEMORYINSTR_MEMARG offseteq? aligneq?
+             | MEMORYINSTR | MEMORYINSTR_IDX idx | MEMORYINSTR_MEMARG offseteq? aligneq?
              // numeric
-             | ICONST (UNSIGNED | SIGNED)
-             | FCONST (FLOAT | UNSIGNED | SIGNED)
-             | NUMERICINSTR
+             | ICONST (UNSIGNED | SIGNED) | FCONST (FLOAT | UNSIGNED | SIGNED) | NUMERICINSTR
 
-offseteq ::= OFFSETEQKEY UNSIGNED { pin=1 recoverWhile='offseteq_recover_' }
-private offseteq_recover_ ::= !(aligneq | instr | RPAR)
+offseteq                  ::= OFFSETEQKEY UNSIGNED { pin=1 recoverWhile='offseteq_recover_' }
+private offseteq_recover_ ::= !(aligneq | instr | RPAR | <<eof>>)
 
-aligneq ::= ALIGNEQKEY UNSIGNED { pin=1 recoverWhile='aligneq_recover_' }
-private aligneq_recover_ ::= !(instr | RPAR)
+aligneq                  ::= ALIGNEQKEY UNSIGNED { pin=1 recoverWhile='aligneq_recover_' }
+private aligneq_recover_ ::= !(instr | RPAR | <<eof>>)
 
 
-// modules
-// indices
-idx ::= UNSIGNED | IDENTIFIER
-
+// MODULEFIELDS
 // types
-type ::= LPAR TYPEKEY IDENTIFIER? functype RPAR { pin=4 }
+type              ::= LPAR type_aux_ RPAR { pin=2 }
+private type_aux_ ::= TYPEKEY IDENTIFIER? functype { pin=1 recoverWhile='item_recover_' }
 
-// type uses
-typeuse ::= (LPAR TYPEKEY idx RPAR)? param* result*
 
 // imports
-import ::= LPAR IMPORTKEY STRING STRING importdesc RPAR { pin=2 }
+import              ::= LPAR import_aux_ RPAR { pin=2 }
+private import_aux_ ::= IMPORTKEY string_fir_aux_ string_aux_ importdesc { pin=1 recoverWhile='item_recover_' }
+
+private string_fir_aux_     ::= STRING { pin=1 recoverWhile='string_fir_recover_' }
+private string_fir_recover_ ::= !(STRING | LPAR | RPAR | <<eof>>)
+private string_aux_         ::= STRING { pin=1 recoverWhile='string_recover_' }
+private string_recover_     ::= !(LPAR | RPAR | <<eof>>)
+
 importdesc ::= importdesc_func_ | importdesc_table_ | importdesc_memory_ | importdesc_global_
-private importdesc_func_ ::= LPAR FUNCKEY IDENTIFIER? typeuse RPAR { pin=4 }
-private importdesc_table_ ::= LPAR TABLEKEY IDENTIFIER? tabletype RPAR { pin=4 }
-private importdesc_memory_ ::= LPAR MEMORYKEY IDENTIFIER? memtype RPAR { pin=4 }
-private importdesc_global_ ::= LPAR GLOBALKEY IDENTIFIER? globaltype RPAR { pin=4 }
+private importdesc_func_       ::= LPAR importdesc_func_aux_ RPAR { pin=2 }
+private importdesc_func_aux_   ::= FUNCKEY IDENTIFIER? typeuse? { pin=1 recoverWhile='item_recover_' }
+private importdesc_table_      ::= LPAR importdesc_table_aux_ RPAR { pin=2 }
+private importdesc_table_aux_  ::= TABLEKEY IDENTIFIER? tabletype { pin=1 recoverWhile='item_recover_' }
+private importdesc_memory_     ::= LPAR importdesc_memory_aux_ RPAR { pin=2 }
+private importdesc_memory_aux_ ::= MEMORYKEY IDENTIFIER? memtype { pin=1 recoverWhile='item_recover_' }
+private importdesc_global_     ::= LPAR importdesc_global_aux_ RPAR { pin=2 }
+private importdesc_global_aux_ ::= GLOBALKEY IDENTIFIER? globaltype { pin=1 recoverWhile='item_recover_' }
+
 inline_import ::= LPAR IMPORTKEY STRING STRING RPAR
 
+
 // functions
-func ::= LPAR FUNCKEY IDENTIFIER? (
-            inline_import typeuse
-          | (inline_export (inline_export | inline_import)?)? typeuse local* instr*
-         ) RPAR { pin=2 }
-local ::= LPAR LOCALKEY (IDENTIFIER valtype | valtype*) RPAR { pin=2 }
+func              ::= LPAR func_aux_ RPAR { pin=2 }
+private func_aux_ ::= FUNCKEY func_aux_ident_? (
+                         inline_import typeuse?
+                       | (inline_export (inline_export | inline_import)?)? typeuse? local* instr*
+                      ) { pin=1 recoverWhile='item_recover_' }
+private func_aux_ident_ ::= IDENTIFIER { recoverWhile='func_aux_ident_recover_' }
+private func_aux_ident_recover_ ::= !(LPAR | RPAR | instr_key | <<eof>>)
+private instr_key ::= BLOCKKEY | LOOPKEY | IFKEY
+                    | CONTROLINSTR | CONTROLINSTR_IDX | BRTABLEINSTR | CALLINDIRECTINSTR
+                    | REFDOTISNULLINST | REFDOTNULLINSTR | REFDOTFUNCINSTR
+                    | PARAMETRICINSTR
+                    | VARIABLEINSTR_IDX
+                    | TABLEINSTR_IDX | TABLEINSTR_IDX_IDX | TABLEINSTR_IDX_ELIDX | TABLEINSTR_ELIDX
+                    | MEMORYINSTR | MEMORYINSTR_IDX | MEMORYINSTR_MEMARG
+                    | ICONST | FCONST | NUMERICINSTR
+
+
+local              ::= LPAR local_aux_ RPAR { pin=2 }
+private local_aux_ ::= LOCALKEY (IDENTIFIER valtype | valtype*) { pin=1 recoverWhile='item_recover_' }
+
 
 // tables
-table ::= LPAR TABLEKEY IDENTIFIER? (
-             inline_elem
-           | inline_import? tabletype
-           | inline_export (inline_import | inline_export | inline_elem)?
-          ) RPAR { pin=2 }
+table              ::= LPAR table_aux_ RPAR { pin=2 }
+private table_aux_ ::= TABLEKEY IDENTIFIER? (
+                          inline_elem
+                        | inline_import? tabletype
+                        | inline_export (inline_import | inline_export | inline_elem)?
+                       ) { pin=1 recoverWhile='item_recover_' }
+
 
 // memories
-mem ::= LPAR MEMORYKEY IDENTIFIER? (
-           inline_data
-         | inline_import? memtype
-         | inline_export (inline_import | inline_export | inline_data)?
-        ) RPAR { pin=2 }
+mem             ::= LPAR memaux_ RPAR { pin=2 }
+private memaux_ ::= MEMORYKEY IDENTIFIER? (
+                       inline_data
+                     | inline_import? memtype
+                     | inline_export (inline_import | inline_export | inline_data)?
+                    ) { pin=1 recoverWhile='item_recover_' }
+
 
 // globals
-global ::= LPAR GLOBALKEY IDENTIFIER? (
-              inline_import globaltype
-            | (inline_export (inline_import | inline_export)?)? globaltype instr*
-           ) RPAR { pin=2 }
+global              ::= LPAR global_aux_ RPAR { pin=2 }
+private global_aux_ ::= GLOBALKEY IDENTIFIER? (
+                           inline_import globaltype
+                         | (inline_export (inline_import | inline_export)?)? globaltype instr*
+                        ) { pin=1 recoverWhile='item_recover_' }
+
 
 // exports
-export ::= LPAR EXPORTKEY STRING exportdesc RPAR { pin=2 }
-exportdesc ::= LPAR (FUNCKEY | TABLEKEY | MEMORYKEY | GLOBALKEY) idx RPAR { pin=3 }
-inline_export ::= LPAR EXPORTKEY STRING RPAR
+export              ::= LPAR export_aux_ RPAR { pin=2 }
+private export_aux_ ::= EXPORTKEY string_aux_ exportdesc { pin=1 recoverWhile='item_recover_' }
+
+exportdesc ::= exportdesc_func_ | exportdesc_table_ | exportdesc_memory_ | exportdesc_global_
+private exportdesc_func_       ::= LPAR exportdesc_func_aux_ RPAR { pin=2 }
+private exportdesc_func_aux_   ::= FUNCKEY idx { pin=1 recoverWhile='item_recover_' }
+private exportdesc_table_      ::= LPAR exportdesc_table_aux_ RPAR { pin=2 }
+private exportdesc_table_aux_  ::= TABLEKEY idx { pin=1 recoverWhile='item_recover_' }
+private exportdesc_memory_     ::= LPAR exportdesc_memory_aux_ RPAR { pin=2 }
+private exportdesc_memory_aux_ ::= MEMORYKEY idx { pin=1 recoverWhile='item_recover_' }
+private exportdesc_global_     ::= LPAR exportdesc_global_aux_ RPAR { pin=2 }
+private exportdesc_global_aux_ ::= GLOBALKEY idx { pin=1 recoverWhile='item_recover_' }
+
+inline_export ::= LPAR EXPORTKEY STRING RPAR { pin=2 }
+
 
 // start function
-start ::= LPAR STARTKEY idx RPAR { pin=2 }
+start              ::= LPAR start_aux_ RPAR { pin=2 }
+private start_aux_ ::= STARTKEY idx { pin=1 recoverWhile='item_recover_' }
+
 
 // element segments
-elem ::= LPAR ELEMKEY IDENTIFIER? (
-           (LPAR TABLEKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR)
-         | DECLAREKEY
-         )? elemlist RPAR { pin=2 }
+elem              ::= LPAR elem_aux_ RPAR { pin=2 }
+private elem_aux_ ::= ELEMKEY IDENTIFIER? (
+                         (LPAR TABLEKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR)
+                       | DECLAREKEY
+                      )? elemlist { pin=1 recoverWhile='item_recover_' }
+
 elemlist ::= REFTYPE (instr | LPAR ITEMKEY instr* RPAR)* | FUNCKEY? idx*
-inline_elem ::= REFTYPE LPAR ELEMKEY (instr+ | elemlist)? RPAR { pin=3 }
+
+inline_elem              ::= REFTYPE LPAR inline_elem_aux_ RPAR { pin=3 }
+private inline_elem_aux_ ::= ELEMKEY (instr+ | elemlist)? { pin=1 recoverWhile='item_recover_' }
+
 
 // data segments
-data ::= LPAR DATAKEY idx? ((LPAR MEMORYKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR))? STRING* RPAR { pin=2 }
-inline_data ::= LPAR DATAKEY STRING* RPAR
+data              ::= LPAR data_aux_ RPAR { pin=2 }
+private data_aux_ ::= DATAKEY idx? ((LPAR MEMORYKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR))? STRING* { pin=1 recoverWhile='item_recover_' }
+
+inline_data              ::= LPAR inline_data_aux_ RPAR { pin=2 }
+private inline_data_aux_ ::= DATAKEY STRING* { pin=1 recoverWhile='item_recover_' }
 
 
 // not important for the parser
-comment ::= LINE_COMMENT | BLOCK_COMMENT
+comment      ::= LINE_COMMENT | BLOCK_COMMENT
 lexer_tokens ::= BAD_TOKEN
