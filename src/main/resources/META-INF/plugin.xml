@@ -38,6 +38,10 @@
         <lang.commenter language="WebAssembly"
                         implementationClass="org.jetbrains.webstorm.lang.WebAssemblyCommenter"/>
 
+        <!-- Folding -->
+        <lang.foldingBuilder language="WebAssembly"
+                             implementationClass="org.jetbrains.webstorm.lang.WebAssemblyFoldingBuilder"/>
+
         <!-- Completion -->
         <completion.contributor language="WebAssembly"
                                 implementationClass="org.jetbrains.webstorm.lang.WebAssemblyKeywordCompletionContributor"/>
