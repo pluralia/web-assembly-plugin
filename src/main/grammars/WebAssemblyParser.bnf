@@ -228,7 +228,9 @@ private inline_elem_aux_ ::= ELEMKEY (instr+ | elemlist)? { pin=1 recoverWhile='
 
 // data segments
 data              ::= LPAR data_aux_ RPAR { pin=2 }
-private data_aux_ ::= DATAKEY idx? ((LPAR MEMORYKEY idx RPAR)? (instr | LPAR OFFSETKEY instr* RPAR))? STRING* { pin=1 recoverWhile='item_recover_' }
+private data_aux_ ::= DATAKEY IDENTIFIER? (memuse_? (instr | LPAR OFFSETKEY instr* RPAR))? STRING*
+    { pin=1 recoverWhile='item_recover_' }
+private memuse_   ::= LPAR MEMORYKEY idx RPAR { pin=2 }
 
 inline_data              ::= LPAR inline_data_aux_ RPAR { pin=2 }
 private inline_data_aux_ ::= DATAKEY STRING* { pin=1 recoverWhile='item_recover_' }
