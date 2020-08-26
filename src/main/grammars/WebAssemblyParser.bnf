@@ -166,12 +166,14 @@ private local_aux_ ::= LOCALKEY (IDENTIFIER valtype | valtype*) { pin=1 recoverW
 
 
 // tables
-table              ::= LPAR table_aux_ RPAR { pin=2 }
-private table_aux_ ::= TABLEKEY IDENTIFIER? (
+table ::= LPAR table_aux_ RPAR { pin=2 }
+private table_aux_ ::= TABLEKEY table_aux_ident_? (
                           inline_elem
                         | inline_import? tabletype
                         | inline_export (inline_import | inline_export | inline_elem)?
                        ) { pin=1 recoverWhile='item_recover_' }
+private table_aux_ident_ ::= IDENTIFIER { recoverWhile='table_aux_ident_recover_' }
+private table_aux_ident_recover_ ::= !(LPAR | RPAR | REFTYPE | memtype | <<eof>>)
 
 
 // memories
