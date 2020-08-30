@@ -64,28 +64,32 @@ REFTYPE = "funcref" | "externref"
 // instructions (updated)
 // control
 CONTROLINSTR = unreachable | nop | return
-CONTROLINSTR_IDX = br(_if)? | call
+CONTROLINSTR_IDX = br(_if)?
+CALLINSTR = call
 BRTABLEINSTR = br_table
 CALLINDIRECTINSTR = call_indirect
 
 // reference (new)
-REFDOTISNULLINST = ref\.is_null
-REFDOTNULLINSTR = ref\.null
-REFDOTFUNCINSTR = ref\.func
+REFISNULLINST = ref\.is_null
+REFNULLINSTR = ref\.null
+REFFUNCINSTR = ref\.func
 
 // parametric
 PARAMETRICINSTR = drop | select
 
 // variable
-VARIABLEINSTR_IDX = local\.([gs]et | tee) | global\.[gs]et
-                  // WebAssembly v1.0
-                  | [gs]et_(local | global) | tee_local
+LOCALINSTR = local\.([gs]et | tee)
+           // WebAssembly v1.0
+           | [gs]et_local | tee_local
+GLOBALINSTR = global\.[gs]et
+            // WebAssembly v1.0
+            | [gs]et_global
 
 // table (new)
 TABLEINSTR_IDX = table\.([gs]et | size | grow | fill)
-TABLEINSTR_IDX_IDX = table\.copy
-TABLEINSTR_IDX_ELIDX = table\.init
-TABLEINSTR_ELIDX = elem\.drop
+TABLECOPYINSTR = table\.copy
+TABLEINITINSTR = table\.init
+ELEMDROPINSTR = elem\.drop
 
 // memory (updated)
 MEMORYINSTR = memory\.(size | grow | fill | copy)
@@ -172,21 +176,23 @@ NUMERICINSTR = i(32 | 64)\.(c[lt]z | popcnt | add | sub | mul | (div | rem | shr
 
     {CONTROLINSTR}              { return CONTROLINSTR; }
     {CONTROLINSTR_IDX}          { return CONTROLINSTR_IDX; }
+    {CALLINSTR}                 { return CALLINSTR; }
     {BRTABLEINSTR}              { return BRTABLEINSTR; }
     {CALLINDIRECTINSTR}         { return CALLINDIRECTINSTR; }
 
-    {REFDOTISNULLINST}          { return REFDOTISNULLINST; }
-    {REFDOTNULLINSTR}           { return REFDOTNULLINSTR; }
-    {REFDOTFUNCINSTR}           { return REFDOTFUNCINSTR; }
+    {REFISNULLINST}             { return REFISNULLINST; }
+    {REFNULLINSTR}              { return REFNULLINSTR; }
+    {REFFUNCINSTR}              { return REFFUNCINSTR; }
 
     {PARAMETRICINSTR}           { return PARAMETRICINSTR; }
 
-    {VARIABLEINSTR_IDX}         { return VARIABLEINSTR_IDX; }
+    {LOCALINSTR}                { return LOCALINSTR; }
+    {GLOBALINSTR}               { return GLOBALINSTR; }
 
     {TABLEINSTR_IDX}            { return TABLEINSTR_IDX; }
-    {TABLEINSTR_IDX_IDX}        { return TABLEINSTR_IDX_IDX; }
-    {TABLEINSTR_IDX_ELIDX}      { return TABLEINSTR_IDX_ELIDX; }
-    {TABLEINSTR_ELIDX}          { return TABLEINSTR_ELIDX; }
+    {TABLECOPYINSTR}            { return TABLECOPYINSTR; }
+    {TABLEINITINSTR}            { return TABLEINITINSTR; }
+    {ELEMDROPINSTR}             { return ELEMDROPINSTR; }
 
     "offset="                   { return OFFSETEQKEY; }
     "align="                    { return ALIGNEQKEY; }
