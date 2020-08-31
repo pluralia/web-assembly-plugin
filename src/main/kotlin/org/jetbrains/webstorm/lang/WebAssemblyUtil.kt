@@ -15,7 +15,7 @@ object WebAssemblyUtil {
     fun findParamsLocals(parent: PsiElement): Array<WebAssemblyNamedElement> {
         val result: MutableList<WebAssemblyNamedElement> = ArrayList()
 
-        parent.children.map {
+        parent.children.forEach {
             if (it.elementType == WebAssemblyTypes.PARAM ||
                     it.elementType == WebAssemblyTypes.LOCAL) {
                 result.add(it as WebAssemblyNamedElement)
@@ -29,7 +29,7 @@ object WebAssemblyUtil {
     fun findModulefield(type: IElementType, parent: PsiElement): Array<WebAssemblyNamedElement> {
         val result: MutableList<WebAssemblyNamedElement> = ArrayList()
 
-        parent.parent.children.map {
+        parent.parent.children.forEach {
             if (it.firstChild.elementType == type) {
                 result.add(it.firstChild as WebAssemblyNamedElement)
             }
@@ -64,7 +64,7 @@ object WebAssemblyUtil {
         for (virtualFile in virtualFiles) {
             PsiManager.getInstance(project).findFile(virtualFile!!)?.let {
                 PsiTreeUtil.getChildrenOfType(it, WebAssemblyModule::class.java)
-                        ?.map { module -> module?.let{ result.add(module) } }
+                        ?.forEach { module -> module?.let{ result.add(module) } }
             }
         }
         return result.toTypedArray()

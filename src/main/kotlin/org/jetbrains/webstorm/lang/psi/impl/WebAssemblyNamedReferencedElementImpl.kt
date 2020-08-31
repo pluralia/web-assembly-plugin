@@ -19,7 +19,7 @@ open class WebAssemblyNamedReferencedElementImpl(node: ASTNode)
 
         node
             .getChildren(TokenSet.create(WebAssemblyTypes.IDX))
-            .map {
+            .forEach {
                 PsiTreeUtil.getParentOfType(node.psi, WebAssemblyModulefield::class.java)?.let { parent ->
                     result.add(WebAssemblyReference(node, it, when (node.elementType) {
                         WebAssemblyTypes.TYPEUSE_TYPEREF     -> WebAssemblyUtil.findModulefield(WebAssemblyTypes.TYPE, parent)

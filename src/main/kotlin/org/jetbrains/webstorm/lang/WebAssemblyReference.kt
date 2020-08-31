@@ -34,7 +34,7 @@ class WebAssemblyReference(node: ASTNode,
             return results.toTypedArray()
         }
 
-        namedElements?.map {
+        namedElements?.forEach {
             if (it.nameIdentifier?.text == ident) {
                 results.add(PsiElementResolveResult(it))
             }
