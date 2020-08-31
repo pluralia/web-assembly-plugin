@@ -1,6 +1,6 @@
 #### [WebAssembly](https://webassembly.org/) plugin for JetBrains IDEs
 
-##### Key features
+##### Key features for wat-files
 * Syntax highlighting
 * Brace mattcher
 * Commenter
