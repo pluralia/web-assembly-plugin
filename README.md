@@ -1,13 +1,16 @@
 #### [WebAssembly](https://webassembly.org/) plugin for JetBrains IDEs
 
-##### Key features
+##### Key features for wat-files:
 * Syntax highlighting
-* Brace mattcher
-* Commenter
-* Code folding
+* Minor features
+  - brace matching
+  - commenter
+  - code folding
 * Code completion
 * References and navigation
-* Supports [the feature release](https://webassembly.github.io/reference-types/core/)
+* Features of [the new release](https://webassembly.github.io/reference-types/core/)
+  - bulk instructions
+  - reference types
 
 
 ##### Issues/Feature Requests

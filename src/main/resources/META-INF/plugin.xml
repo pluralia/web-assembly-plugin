@@ -3,13 +3,19 @@
     <name>WebAssembly</name>
     <vendor>JetBrains</vendor>
 
-    <description><![CDATA[
-      WebAssembly (often shortened to Wasm) is an open standard that defines a portable binary-code format for
-      executable programs, and a corresponding textual assembly language, as well as interfaces for facilitating
-      interactions between such programs and their host environment. The main goal of WebAssembly is to enable
-      high-performance applications on web pages, but the format is designed to be executed and integrated in other
-      environments as well [https://en.wikipedia.org/wiki/WebAssembly].
-    ]]></description>
+    <description>
+        <![CDATA[
+        The plugin supports the WebAssembly language. The following features are available for wat-files:
+        <br>
+        <ul>
+            <li>Syntax highlighting</li>
+            <li>Minor features (brace matching, commenter, code folding)</li>
+            <li>Code completion</li>
+            <li>References and navigation</li>
+            <li>Features of the new release (bulk instructions, reference types)</li>
+        </ul>
+        ]]>
+    </description>
 
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
