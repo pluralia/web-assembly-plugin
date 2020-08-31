@@ -52,6 +52,10 @@
         <completion.contributor language="WebAssembly"
                                 implementationClass="org.jetbrains.webstorm.lang.WebAssemblyKeywordCompletionContributor"/>
 
+        <!-- Formatter -->
+        <lang.formatter language="WebAssembly"
+                        implementationClass="org.jetbrains.webstorm.lang.WebAssemblyFormattingModelBuilder"/>
+
     </extensions>
 
     <actions>
