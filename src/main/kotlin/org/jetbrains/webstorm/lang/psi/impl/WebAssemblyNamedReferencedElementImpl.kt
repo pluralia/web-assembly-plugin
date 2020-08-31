@@ -17,29 +17,13 @@ open class WebAssemblyNamedReferencedElementImpl(node: ASTNode)
     override fun getReferences(): Array<PsiReference> {
         val result: MutableList<PsiReference> = mutableListOf()
 
-        node
-            .getChildren(TokenSet.create(WebAssemblyTypes.IDX))
-            .forEach {
-                PsiTreeUtil.getParentOfType(node.psi, WebAssemblyModulefield::class.java)?.let { parent ->
-                    result.add(WebAssemblyReference(node, it, when (node.elementType) {
-                        WebAssemblyTypes.TYPEUSE_TYPEREF     -> WebAssemblyUtil.findModulefield(WebAssemblyTypes.TYPE, parent)
-                        WebAssemblyTypes.START               -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.FUNC, parent)
-                        WebAssemblyTypes.ELEM                -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.TABLE, parent)
-                        WebAssemblyTypes.ELEMLIST            -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.FUNC, parent)
-                        WebAssemblyTypes.DATA                -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.MEM, parent)
-                        WebAssemblyTypes.CALL_INSTR          -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.FUNC, parent)
-                        WebAssemblyTypes.CALL_INDIRECT_INSTR -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.TABLE, parent)
-                        WebAssemblyTypes.REF_FUNC_INSTR      -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.FUNC, parent)
-                        WebAssemblyTypes.LOCAL_INSTR         -> WebAssemblyUtil.findParamsLocals(parent)
-                        WebAssemblyTypes.GLOBAL_INSTR        -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.GLOBAL, parent)
-                        WebAssemblyTypes.TABLE_IDX_INSTR     -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.TABLE, parent)
-                        WebAssemblyTypes.TABLE_COPY_INSTR    -> WebAssemblyUtil.findImportedModulefield(WebAssemblyTypes.TABLE, parent)
-                        WebAssemblyTypes.ELEM_DROP_INSTR     -> WebAssemblyUtil.findModulefield(WebAssemblyTypes.ELEM, parent)
-                        WebAssemblyTypes.MEMORY_IDX_INSTR    -> WebAssemblyUtil.findModulefield(WebAssemblyTypes.DATA, parent)
-                        else                                 -> null as Array<WebAssemblyNamedElement>?
-                    }))
-                }
-            }
+        when (node.elementType) {
+            WebAssemblyTypes.EXPORT -> { node.findChildByType(WebAssemblyTypes.EXPORTDESC) }
+            else -> node
+        }?.getChildren(TokenSet.create(WebAssemblyTypes.IDX))
+        ?.forEach {
+            result.add(WebAssemblyReference(node, it))
+        }
 
         return result.toTypedArray()
     }

@@ -310,7 +310,7 @@ private global_aux_ ::= GLOBALKEY IDENTIFIER? (
 // exports
 export ::= LPAR export_aux_ RPAR {
     pin=2
-    mixin="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyReferencedExportImpl"
+    mixin="org.jetbrains.webstorm.lang.psi.impl.WebAssemblyNamedReferencedElementImpl"
     implements="org.jetbrains.webstorm.lang.psi.WebAssemblyReferencedElement"
     methods=[getReference getReferences]
 }
