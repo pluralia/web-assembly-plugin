@@ -9,11 +9,10 @@ import com.intellij.psi.tree.IElementType
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.psi.util.elementType
 import org.jetbrains.webstorm.lang.psi.*
-import java.util.*
 
 object WebAssemblyUtil {
     fun findParamsLocals(parent: PsiElement): Array<WebAssemblyNamedElement> {
-        val result: MutableList<WebAssemblyNamedElement> = ArrayList()
+        val result: MutableList<WebAssemblyNamedElement> = mutableListOf()
 
         parent.children.forEach {
             if (it.elementType == WebAssemblyTypes.PARAM ||
@@ -27,7 +26,7 @@ object WebAssemblyUtil {
     }
 
     fun findModulefield(type: IElementType, parent: PsiElement): Array<WebAssemblyNamedElement> {
-        val result: MutableList<WebAssemblyNamedElement> = ArrayList()
+        val result: MutableList<WebAssemblyNamedElement> = mutableListOf()
 
         parent.parent.children.forEach {
             if (it.firstChild.elementType == type) {
@@ -58,7 +57,7 @@ object WebAssemblyUtil {
     }
 
     fun findModules(project: Project): Array<WebAssemblyModule> {
-        val result: MutableList<WebAssemblyModule> = ArrayList()
+        val result: MutableList<WebAssemblyModule> = mutableListOf()
         val virtualFiles = FileTypeIndex.getFiles(WebAssemblyFileType, GlobalSearchScope.allScope(project))
 
         for (virtualFile in virtualFiles) {

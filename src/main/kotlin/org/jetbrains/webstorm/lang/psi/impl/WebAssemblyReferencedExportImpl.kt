@@ -19,7 +19,7 @@ open class WebAssemblyReferencedExportImpl(node: ASTNode) : ASTWrapperPsiElement
     private val exportdescNode: ASTNode? = node.findChildByType(WebAssemblyTypes.EXPORTDESC)
 
     override fun getReferences(): Array<PsiReference> {
-        val result: MutableList<PsiReference> = ArrayList()
+        val result: MutableList<PsiReference> = mutableListOf()
 
         exportdescNode
             ?.findChildByType(WebAssemblyTypes.IDX)

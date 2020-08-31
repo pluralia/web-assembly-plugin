@@ -11,7 +11,7 @@ import org.jetbrains.webstorm.lang.psi.*
 
 open class WebAssemblyReferencedTableInitInstrImpl(node: ASTNode) : ASTWrapperPsiElement(node), WebAssemblyReferencedElement {
     override fun getReferences(): Array<PsiReference> {
-        val result: MutableList<PsiReference> = ArrayList()
+        val result: MutableList<PsiReference> = mutableListOf()
 
         val children: Array<ASTNode> = node.getChildren(TokenSet.create(WebAssemblyTypes.IDX))
 

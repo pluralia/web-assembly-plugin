@@ -15,7 +15,7 @@ open class WebAssemblyNamedReferencedElementImpl(node: ASTNode)
     : ASTWrapperPsiElement(node), WebAssemblyNamedReferencedElement {
 
     override fun getReferences(): Array<PsiReference> {
-        val result: MutableList<PsiReference> = ArrayList()
+        val result: MutableList<PsiReference> = mutableListOf()
 
         node
             .getChildren(TokenSet.create(WebAssemblyTypes.IDX))

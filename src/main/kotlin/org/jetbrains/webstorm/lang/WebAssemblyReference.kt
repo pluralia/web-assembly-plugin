@@ -23,7 +23,7 @@ class WebAssemblyReference(node: ASTNode,
     }
 
     override fun multiResolve(incompleteCode: Boolean): Array<ResolveResult> {
-        val results: MutableList<ResolveResult> = ArrayList()
+        val results: MutableList<ResolveResult> = mutableListOf()
 
         ident.toIntOrNull()?.let { id ->
             namedElements?.let {
