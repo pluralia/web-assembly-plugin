@@ -290,7 +290,7 @@ mem ::= LPAR memaux_ RPAR {
 private memaux_ ::= MEMORYKEY IDENTIFIER? (
                        inline_data
                      | inline_import? memtype
-                     | inline_export (inline_import | inline_export | inline_data)?
+                     | inline_export (inline_import | inline_export | inline_data)* memtype
                     ) { pin=1 recoverWhile='item_recover_' }
 
 

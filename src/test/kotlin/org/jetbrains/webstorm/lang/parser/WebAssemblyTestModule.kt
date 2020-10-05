@@ -9,6 +9,8 @@ class WebAssemblyTestModule : WebAssemblyTestBase("module") {
     fun testExportGlobal() = doTest()
     fun testExportMemoryMulti() = doTest()
     fun testExportMemory() = doTest()
+    fun testExportMemoryInline() = doTest()
+    fun testExportMemoryInlineSeveral() = doTest()
     fun testExportTable() = doTest()
     fun testGlobalExnref() = doTest()
     fun testGlobal() = doTest()
