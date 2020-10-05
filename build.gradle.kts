@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "org.jetbrains.webstorm"
-version = "1.01-SNAPSHOT"
+version = "1.2"
 
 repositories {
     mavenCentral()
@@ -42,8 +42,9 @@ tasks {
 
 tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
     changeNotes("""
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>""")
+      <p>Fixed parsing issue for the memory instruction</p>
+      <p>Updated icon for the file type</p>
+      """)
 }
 
 sourceSets {
