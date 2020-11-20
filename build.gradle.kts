@@ -3,14 +3,14 @@ import org.jetbrains.grammarkit.tasks.GenerateParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.intellij") version "0.4.21"
+    id("org.jetbrains.intellij") version "0.6.4"
     java
-    kotlin("jvm") version "1.3.72"
+    kotlin("jvm") version "1.4.10"
     id("org.jetbrains.grammarkit") version "2020.2.1"
 }
 
 group = "org.jetbrains.webstorm"
-version = "1.2"
+version = "1.3"
 
 repositories {
     mavenCentral()
@@ -23,7 +23,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "IU-2020.2"
+    version = "IU-LATEST-EAP-SNAPSHOT"
 }
 
 tasks {
