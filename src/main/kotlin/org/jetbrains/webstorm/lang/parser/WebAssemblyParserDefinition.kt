@@ -31,9 +31,8 @@ class WebAssemblyParserDefinition : ParserDefinition {
 
     override fun getFileNodeType(): IFileElementType = FILE
 
-    override fun createFile(viewProvider: FileViewProvider?): PsiFile = WebAssemblyFile(viewProvider)
-
-
+    override fun createFile(viewProvider: FileViewProvider): PsiFile = WebAssemblyFile(viewProvider)
+    
     override fun spaceExistenceTypeBetweenTokens(left: ASTNode?, right: ASTNode?): SpaceRequirements =
         SpaceRequirements.MAY
 
