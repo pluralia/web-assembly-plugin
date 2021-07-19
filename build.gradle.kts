@@ -3,11 +3,12 @@ import org.jetbrains.grammarkit.tasks.GenerateParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.intellij") version "0.6.4"
+    id("org.jetbrains.intellij") version "1.1.3"
     java
-    kotlin("jvm") version "1.4.10"
-    id("org.jetbrains.grammarkit") version "2020.2.1"
+    kotlin("jvm") version "1.5.21"
+    id("org.jetbrains.grammarkit") version "2021.1.3"
 }
+
 
 group = "org.jetbrains.webstorm"
 version = "1.3"
@@ -19,11 +20,12 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     testImplementation("junit", "junit", "4.12")
+    implementation("dk.brics.automaton", "automaton", "1.11-8")
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = "IU-LATEST-EAP-SNAPSHOT"
+    version.set("IU-LATEST-EAP-SNAPSHOT")
 }
 
 tasks {
@@ -38,13 +40,6 @@ tasks {
     test {
         systemProperty("idea.home.path", "\$HOME/IdeaProjects")
     }
-}
-
-tasks.getByName<org.jetbrains.intellij.tasks.PatchPluginXmlTask>("patchPluginXml") {
-    changeNotes("""
-      <p>Fixed parsing issue for the memory instruction</p>
-      <p>Updated icon for the file type</p>
-      """)
 }
 
 sourceSets {
