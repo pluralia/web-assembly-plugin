@@ -1,5 +1,4 @@
 import org.jetbrains.grammarkit.tasks.GenerateLexer
-import org.jetbrains.grammarkit.tasks.GenerateParser
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -11,7 +10,7 @@ plugins {
 
 
 group = "org.jetbrains.webstorm"
-version = "1.4"
+version = "1.4.213"
 
 repositories {
     mavenCentral()
@@ -19,8 +18,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
-    testImplementation("junit", "junit", "4.12")
-//    implementation("dk.brics.automaton", "automaton", "1.11-8")
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -55,8 +52,16 @@ val generateWebAssemblyLexer = task<GenerateLexer>("generateWebAssemblyLexer") {
     purgeOldFiles = true
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn(
-            generateWebAssemblyLexer,
-    )
+
+tasks {
+    patchPluginXml {
+        sinceBuild.set("213.0")
+        untilBuild.set("213.*")
+    }
+
+    withType<KotlinCompile> {
+        dependsOn(
+            generateWebAssemblyLexer
+        )
+    }
 }
