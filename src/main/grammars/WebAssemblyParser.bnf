@@ -1,7 +1,6 @@
 {
   parserClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParser"
   parserUtilClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParserUtil"
-
   psiClassPrefix="WebAssembly"
   psiImplClassSuffix="Impl"
   psiPackage="org.jetbrains.webstorm.lang.psi"

@@ -7,12 +7,14 @@ import com.intellij.psi.util.elementType
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.jetbrains.webstorm.lang.psi.WebAssemblyNamedElement
 import org.jetbrains.webstorm.lang.psi.WebAssemblyTypes
+import org.junit.Test
 
 class WebAssemblyReferenceTest : BasePlatformTestCase() {
     private val testReferenceDir: String = "reference/"
 
     override fun getTestDataPath(): String = "src/test/resources/editor"
 
+    @Test
     fun testBulkMemoryDisabled() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.DATA,  null),
@@ -30,6 +32,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testBulkMemoryNamed() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.DATA,  "\$data"),
@@ -41,6 +44,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testCall() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.FUNC, null),
@@ -50,6 +54,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testExportGlobal() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.GLOBAL, null),
@@ -62,6 +67,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testHighlighting() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.FUNC,   "\$getHeight"),
@@ -80,6 +86,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testLoopMultiNamed() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.TYPE, "\$v_v"),
@@ -89,6 +96,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testMemory() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.LOCAL, "\$end"),
@@ -105,6 +113,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testReferenceTypesCallIndirect() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.TABLE, "\$foo"),
@@ -114,6 +123,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testReferenceTypesNamed() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.TABLE, "\$foo"),
@@ -123,6 +133,7 @@ class WebAssemblyReferenceTest : BasePlatformTestCase() {
         ))
     }
 
+    @Test
     fun testWasmTable() {
         testReference(getTestName(false), arrayOf(
                 Pair(WebAssemblyTypes.FUNC,   "\$f2"),
