@@ -26,7 +26,7 @@
                   implementationClass="org.jetbrains.webstorm.lang.psi.WebAssemblyFileType"
                   fieldName="INSTANCE"
                   language="WebAssembly"
-                  extensions="wat"/>
+                  extensions="wat;wast"/>
 
         <lang.parserDefinition language="WebAssembly"
                                implementationClass="org.jetbrains.webstorm.lang.parser.WebAssemblyParserDefinition"/>

@@ -2,15 +2,14 @@ import org.jetbrains.grammarkit.tasks.GenerateLexer
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.intellij") version "1.3.0"
+    id("org.jetbrains.intellij") version "1.5.2"
     java
     kotlin("jvm") version "1.5.21"
     id("org.jetbrains.grammarkit") version "2021.1.3"
 }
 
-
 group = "org.jetbrains.webstorm"
-version = "1.4.213"
+version = "1.4.221"
 
 repositories {
     mavenCentral()
@@ -55,8 +54,8 @@ val generateWebAssemblyLexer = task<GenerateLexer>("generateWebAssemblyLexer") {
 
 tasks {
     patchPluginXml {
-        sinceBuild.set("213.0")
-        untilBuild.set("213.*")
+        sinceBuild.set("221.0")
+        untilBuild.set("221.*")
     }
 
     withType<KotlinCompile> {
