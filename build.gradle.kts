@@ -3,20 +3,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.intellij") version "1.5.2"
-    java
-    kotlin("jvm") version "1.5.21"
+    id("org.jetbrains.kotlin.jvm") version "1.7.10"
     id("org.jetbrains.grammarkit") version "2021.1.3"
 }
 
 group = "org.jetbrains.webstorm"
-version = "1.4.221"
+version = "1.4.222"
 
 repositories {
     mavenCentral()
-}
-
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
@@ -54,8 +49,8 @@ val generateWebAssemblyLexer = task<GenerateLexer>("generateWebAssemblyLexer") {
 
 tasks {
     patchPluginXml {
-        sinceBuild.set("221.0")
-        untilBuild.set("221.*")
+        sinceBuild.set("222.0")
+        untilBuild.set("222.*")
     }
 
     withType<KotlinCompile> {
